@@ -1,0 +1,10 @@
+﻿C:\Users\mknig\AppData\Local\Programs\Python\Python312\python.exe : [32m2026-06-21 19:50:29.430[0m | [1mINFO    
+[0m | [36mautohedge.tools.blofin_universe_feed[0m:[36mrefresh[0m:[36m353[0m - [1mUniverse feed refreshed: 516 
+instruments via rest_parallel[0m
+At C:\Users\mknig\AppData\Local\Temp\ps-script-9b5efdb2-e476-45f9-af0c-660bc016166c.ps1:106 char:1
++ C:\Users\mknig\AppData\Local\Programs\Python\Python312\python.exe blo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([32m2026-06-21...st_parallel[0m:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[{"instId": "CLO-USDT", "last": "0.18", "lastSize": "15", "askPrice": "0.1799", "askSize": "8", "bidPrice": "0.1798", "bidSize": "2", "high24h": "0.2807", "open24h": "0.2657", "low24h": "0.1762", "volCurrency24h": "3610200", "vol24h": "361020", "ts": "1782085826775", "chg_pct": -32.254}]

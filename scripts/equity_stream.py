@@ -22,9 +22,21 @@ WS_TICKERS = OUTPUT_DIR / "ws-tickers.json"
 POSITIONS_CACHE = AUTO_TRADER_ROOT / "outputs" / "positions-cache.json"
 EQUITY_CURVE = OUTPUT_DIR / "equity_curve.jsonl"
 STREAM_STATE = OUTPUT_DIR / "equity_stream_state.json"
+STREAM_LOG = OUTPUT_DIR / "equity_stream.log"
 
 POSITIONS_DISK_MAX_AGE_SEC = 90.0
 LIVE_ACCOUNT_MIN_INTERVAL_SEC = 2.0
+
+
+def _log(msg: str) -> None:
+    """Lightweight append-only log for diagnosing stream value jumps."""
+    try:
+        ts = time.strftime("%Y-%m-%d %H:%M:%S")
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        with STREAM_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(f"[{ts}] {msg}\n")
+    except OSError:
+        pass
 
 
 def _load_json(path: Path, default: Any = None) -> Any:
@@ -140,6 +152,16 @@ def _load_base_balances(
     return float(state.get("equity") or 0), float(state.get("available") or 0)
 
 
+def _disk_base_balances() -> tuple[float, float]:
+    """Read equity/available from auto-trader disk cache."""
+    eq_cache = AUTO_TRADER_ROOT / "outputs" / "equity-cache.json"
+    try:
+        cache = _load_json(eq_cache, {}) or {}
+        return float(cache.get("equity_usdt") or 0), float(cache.get("available_usdt") or 0)
+    except (TypeError, ValueError):
+        return 0.0, 0.0
+
+
 def _resolve_positions_and_balances(
     fallback: list[dict[str, Any]],
     *,
@@ -148,15 +170,23 @@ def _resolve_positions_and_balances(
     force_live: bool = False,
 ) -> tuple[list[dict[str, Any]], float, float, str]:
     """
-    Read auto-trader disk cache FIRST to avoid API rate limits.
-    Only call live REST if disk cache is stale (>30s) or explicitly forced.
+    Prefer auto-trader disk cache for smooth streaming.
+    Use a long tolerance (5 min) so we do not alternate between disk-cache and live-API
+    values, which causes the dashboard equity to jump. Only hit live REST when disk cache
+    is missing or very stale, or when explicitly forced.
     """
     disk_rows, disk_age = _disk_positions()
-    if disk_rows and disk_age <= 30.0 and not force_live:
-        eq, av = _load_base_balances({}, {}, live_equity=live_equity, live_available=live_available)
-        return disk_rows, eq, av, "pos_disk_fresh"
 
-    # Disk cache is stale or empty — try live API (throttled)
+    # Common case: disk cache exists. Use its equity_usdt as the base so mark-to-market
+    # math is consistent with the positions snapshot.
+    if disk_rows and disk_age <= 300.0 and not force_live:
+        eq, av = _disk_base_balances()
+        if eq <= 0:
+            eq, av = _load_base_balances({}, {}, live_equity=live_equity, live_available=live_available)
+        source = "pos_disk_fresh" if disk_age <= 30.0 else "pos_disk"
+        return disk_rows, eq, av, source
+
+    # Disk missing or very stale — try live API (throttled)
     from blofin_live_api import fetch_live_account
     live = fetch_live_account(force=force_live, min_interval_sec=LIVE_ACCOUNT_MIN_INTERVAL_SEC)
     if live.get("ok"):
@@ -167,8 +197,10 @@ def _resolve_positions_and_balances(
 
     # Live failed — fall back to disk (even if stale, up to 90s)
     if disk_rows and disk_age <= POSITIONS_DISK_MAX_AGE_SEC:
-        eq, av = _load_base_balances({}, {}, live_equity=live_equity, live_available=live_available)
-        return disk_rows, eq, av, "pos_disk"
+        eq, av = _disk_base_balances()
+        if eq <= 0:
+            eq, av = _load_base_balances({}, {}, live_equity=live_equity, live_available=live_available)
+        return disk_rows, eq, av, "pos_disk_stale"
 
     if fallback:
         eq, av = _load_base_balances({}, {}, live_equity=live_equity, live_available=live_available)
@@ -186,20 +218,19 @@ def refresh_streaming_equity(*, write_curve: bool = True, force_live: bool = Fal
     state = _load_json(STATE_FILE, {}) or {}
     stream = _load_json(STREAM_STATE, {}) or {}
 
-    positions, live_equity, live_available, pos_source = _resolve_positions_and_balances(
+    positions, base_equity, available, pos_source = _resolve_positions_and_balances(
         list(live.get("positions") or []),
         live_equity=float(live.get("equity") or 0),
         live_available=float(live.get("available") or 0),
         force_live=force_live,
     )
-    base_equity, available = _load_base_balances(
-        live,
-        state,
-        live_equity=live_equity,
-        live_available=live_available,
-    )
-    if live_available > 0:
-        available = live_available
+    if base_equity <= 0:
+        base_equity, available = _load_base_balances(
+            live,
+            state,
+            live_equity=0,
+            live_available=0,
+        )
 
     tickers_raw = _load_json(WS_TICKERS, {}) or {}
     tickers = _normalize_tickers(tickers_raw)
@@ -225,6 +256,15 @@ def refresh_streaming_equity(*, write_curve: bool = True, force_live: bool = Fal
         equity = base_equity
     else:
         equity = 0.0
+
+    prev_source = stream.get("last_source", "")
+    prev_equity = float(stream.get("last_equity") or 0)
+    log_change = pos_source != prev_source or abs(equity - prev_equity) >= 0.01 or equity <= 0
+    if log_change:
+        _log(
+            f"source={pos_source} base={base_equity:.4f} rest_unreal={rest_unreal:.4f} "
+            f"stream_unreal={stream_unreal:.4f} equity={equity:.4f} positions={len(positions)}"
+        )
 
     now = time.time()
     account_source = "ws_stream" if positions else pos_source
@@ -269,6 +309,7 @@ def refresh_streaming_equity(*, write_curve: bool = True, force_live: bool = Fal
 
     stream["last_tick_at"] = now
     stream["last_equity"] = equity
+    stream["last_source"] = pos_source
     stream["position_count"] = len(updated_positions)
     STREAM_STATE.write_text(json.dumps(stream, indent=2, default=str), encoding="utf-8")
     return meta

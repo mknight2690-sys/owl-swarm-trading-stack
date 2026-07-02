@@ -1,0 +1,11 @@
+import urllib.request, json
+r = urllib.request.urlopen('http://127.0.0.1:7878/api/status')
+data = json.loads(r.read())
+print("Equity:", data["equity"])
+print("Available:", data["available"])
+print("Positions:", len(data["openPositions"]))
+print("Trades:", data["totalTrades"])
+print("Running:", data["running"])
+print("Cycle:", data["cycleCount"])
+print("Events:", len(data["recentEvents"]))
+print("History:", len(data["tradeHistory"]))

@@ -1,0 +1,29 @@
+{
+  "name": "owl-swarm",
+  "version": "0.1.0",
+  "description": "OWL Self-Verifying Agent Swarm for Blofin Trading",
+  "type": "module",
+  "main": "dist/orchestrator.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/orchestrator.ts",
+    "start": "node dist/orchestrator.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@connectrpc/connect-node": "^2.1.2",
+    "@cursor/sdk": "latest",
+    "dotenv": "^16.4.5",
+    "puppeteer-core": "^24.43.1",
+    "uuid": "^10.0.0",
+    "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

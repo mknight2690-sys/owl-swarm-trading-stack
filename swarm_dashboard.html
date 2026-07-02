@@ -118,8 +118,48 @@ th{color:var(--dim);font-size:10px}
 <script>
 const EDGE_COLORS={spawn:'#a78bfa',handoff:'#58a6ff',verify:'#3fb950',reject:'#f85149',data:'#f59e0b',compound:'#10b981',repair:'#fb923c',oversight:'#818cf8',peer_audit:'#ec4899'};
 const NODE_COLORS={idle:'#30363d',active:'#58a6ff',pass:'#3fb950',fail:'#f85149',repair:'#fb923c',checking:'#f59e0b',skipped:'#6e7681'};
-// Server-synced timestamp for per-second ticking
+let _slideState={};
+let _slideRaf=0;
 let _lastServerTs=Math.floor(Date.now()/1000);
+function _slideTo(key,target){
+  if(!_slideState[key]) _slideState[key]={current:target,target:target};
+  _slideState[key].target=target;
+  if(!_slideRaf) _slideRaf=requestAnimationFrame(_slideTick);
+}
+function _slideTick(){
+  let active=false;
+  for(const k in _slideState){
+    const s=_slideState[k];
+    const diff=s.target-s.current;
+    if(Math.abs(diff)>0.000001){
+      s.current+=diff*0.2;
+      active=true;
+    } else {
+      s.current=s.target;
+    }
+  }
+  _slideUpdateDOM();
+  if(active) _slideRaf=requestAnimationFrame(_slideTick);
+  else _slideRaf=0;
+}
+function _slideUpdateDOM(){
+  const eq=_slideState['eq']; if(eq){ const el=document.getElementById('eq'); if(el) el.textContent='$'+eq.current.toFixed(4); }
+  const av=_slideState['av']; if(av){ const el=document.getElementById('av'); if(el) el.textContent='$'+av.current.toFixed(4); }
+  for(const k in _slideState){
+    if(k.startsWith('mark_') || k.startsWith('upnl_') || k.startsWith('roe_')){
+      const el=document.getElementById(k);
+      if(el){
+        const s=_slideState[k];
+        if(k.startsWith('mark_')) el.textContent=s.current.toFixed(6);
+        else if(k.startsWith('upnl_')) el.textContent=(s.current>=0?'+':'')+s.current.toFixed(4);
+        else if(k.startsWith('roe_')) el.textContent=(s.current>=0?'+':'')+s.current.toFixed(2)+'%';
+      }
+    }
+  }
+}
+function _slideRead(key){
+  return _slideState[key]?.current||_slideState[key]?.target||0;
+}
 function _fmtTs(unixSec){
   const d=new Date((unixSec||0)*1000);
   return d.toLocaleTimeString('en-US',{hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
@@ -296,8 +336,13 @@ function renderPipeline(g){
 }
 
 function renderPositions(p){
-  document.getElementById('eq').textContent='$'+Number(p.equity||0).toFixed(4);
-  document.getElementById('av').textContent='$'+Number(p.available||0).toFixed(4);
+  // Slide equity/available toward new targets smoothly
+  _slideTo('eq', Number(p.equity||0));
+  _slideTo('av', Number(p.available||0));
+  // Immediately set the current display from slide state (first frame) or let RAF update
+  const eqEl=document.getElementById('eq'), avEl=document.getElementById('av');
+  if(eqEl) eqEl.textContent='$'+(_slideState['eq']?.current||Number(p.equity||0)).toFixed(4);
+  if(avEl) avEl.textContent='$'+(_slideState['av']?.current||Number(p.available||0)).toFixed(4);
   const acctAge=p.account_ts?Math.max(0,Math.round(Date.now()/1000-p.account_ts)):null;
   const acctHint=acctAge!=null?(acctAge<3?'live':acctAge+'s ago'):'';
   const src=p.account_source?' · '+p.account_source:'';
@@ -332,17 +377,25 @@ function renderPositions(p){
   const roeMap=p.roe_by_position||{};
   if(!p.positions?.length) pt.innerHTML='<tr><td colspan=7 style=color:#8b949e>No positions</td></tr>';
   else pt.innerHTML=p.positions.map(row=>{
+    const inst=row.instId;
     const qty=Number(row.positions||0);
     const side=qty>0?'LONG':qty<0?'SHORT':'—';
     const upnl=Number(row.unrealizedPnl||0);
     const upnlPct=Number(row.unrealizedPnlRatio||0)*100;
     const upnlColor=upnl>=0?'var(--green)':'var(--red)';
     const sideColor=qty>0?'var(--green)':qty<0?'var(--red)':'#8b949e';
-    const roe=roeMap[row.instId];
+    const roe=roeMap[inst];
     const roeStr=roe!=null?(roe>=0?'+':'')+roe.toFixed(2)+'%':'';
     const roeColor=roe!=null?(roe>=0?'var(--green)':'var(--red)'):'';
-    return '<tr><td>'+row.instId+'</td><td style=color:'+sideColor+'>'+side+' '+Math.abs(qty)+'</td><td>'+Number(row.averagePrice||0).toFixed(6)+'</td><td>'+Number(row.markPrice||0).toFixed(6)+'</td><td style=color:'+upnlColor+'>'+(upnl>=0?'+':'')+upnl.toFixed(4)+(upnlPct?(' ('+(upnlPct>=0?'+':'')+upnlPct.toFixed(1)+'%)'):'')+'</td><td style=color:'+roeColor+'>'+roeStr+'</td><td>'+(row.leverage||'?')+'x</td></tr>';
+    // Set slide targets for smooth animation
+    _slideTo('mark_'+inst, Number(row.markPrice||0));
+    _slideTo('upnl_'+inst, upnl);
+    _slideTo('roe_'+inst, roe||0);
+    // Use IDs so _slideUpdateDOM can animate them smoothly
+    return '<tr><td>'+inst+'</td><td style=color:'+sideColor+'>'+side+' '+Math.abs(qty)+'</td><td>'+Number(row.averagePrice||0).toFixed(6)+'</td><td id="mark_'+inst+'">'+Number(row.markPrice||0).toFixed(6)+'</td><td style=color:'+upnlColor+' id="upnl_'+inst+'">'+(upnl>=0?'+':'')+upnl.toFixed(4)+(upnlPct?(' ('+(upnlPct>=0?'+':'')+upnlPct.toFixed(1)+'%)'):'')+'</td><td style=color:'+roeColor+' id="roe_'+inst+'">'+roeStr+'</td><td>'+(row.leverage||'?')+'x</td></tr>';
   }).join('');
+  // Trigger display update for smooth animation
+  if(!_slideRaf) _slideRaf=requestAnimationFrame(_slideTick);
 }
 
 function refreshLive(){
@@ -369,11 +422,9 @@ evtSource.onmessage = function(e){
     const msg = JSON.parse(e.data);
 
     // Live equity/positions — every 500ms, highest priority
+    // renderPositions drives the smooth slide animation; do NOT overwrite eq/av directly.
     if(msg.type === 'live'){
       renderPositions(msg.data);
-      const eqEl=document.getElementById('eq'), avEl=document.getElementById('av');
-      if(eqEl) eqEl.textContent='$'+Number(msg.data.equity||0).toFixed(4);
-      if(avEl) avEl.textContent='$'+Number(msg.data.available||0).toFixed(4);
       // Sync server timestamp for smooth per-second ticking
       if(msg.data.account_ts) _lastServerTs = msg.data.account_ts;
     }

@@ -51,9 +51,25 @@ _SSE_INTERVAL_SEC = 0.5  # max 500ms refresh for live data
 
 
 def _stream_equity_loop() -> None:
-    """DISABLED — equity streamed directly from blofin disk cache in _positions_payload."""
+    """Run equity_stream.refresh_streaming_equity every 500ms so owl-live.json has smooth, mark-to-market equity."""
     while True:
-        time.sleep(60)
+        try:
+            from scripts.equity_stream import refresh_streaming_equity
+
+            refresh_streaming_equity(write_curve=True, force_live=False)
+        except Exception as exc:
+            print(f"[EQUITY STREAM ERROR] {exc}", flush=True)
+        time.sleep(_STREAM_EQUITY_SEC)
+
+
+def _run_equity_stream_once() -> None:
+    """Immediate refresh on startup so owl-live.json is fresh before the first dashboard read."""
+    try:
+        from scripts.equity_stream import refresh_streaming_equity
+
+        refresh_streaming_equity(write_curve=True, force_live=False)
+    except Exception as exc:
+        print(f"[EQUITY STREAM STARTUP ERROR] {exc}", flush=True)
 
 
 def _start_stream_equity() -> None:
@@ -61,8 +77,8 @@ def _start_stream_equity() -> None:
     if _stream_thread_started:
         return
     _stream_thread_started = True
-    # DISABLED — equity read directly from blofin disk cache
-    pass
+    _run_equity_stream_once()
+    threading.Thread(target=_stream_equity_loop, name="owl-equity-stream", daemon=True).start()
 
 
 def _account_refresh_loop() -> None:
@@ -354,31 +370,52 @@ def _positions_payload() -> dict:
         except Exception:
             pass
 
-    return {
+    live = _load_json(LIVE_FILE, {})
+    result = {
         "equity": equity,
         "available": available,
         "positions": positions,
         "account_ts": now,
         "account_source": "blofin_disk",
         "position_count": len(positions),
-        "roe_by_position": {},
-        "events": [],
-        "drift_detected": False,
-        "drift_details": [],
-        "corrections": [],
+        "roe_by_position": live.get("roe_by_position", {}),
+        "events": live.get("events", []),
+        "drift_detected": live.get("drift_detected", False),
+        "drift_details": live.get("drift_details", []),
+        "corrections": live.get("corrections", []),
     }
+    print(f"[_positions_payload] equity={equity:.4f} source=blofin_disk", flush=True)
+    return result
 
 
 def _status_payload() -> dict:
+    # Read equity/available from Blofin disk cache — same source of truth as _positions_payload
+    equity = 0.0
+    available = 0.0
+    positions = []
+    eq_cache = BLOFIN_ROOT / "outputs" / "equity-cache.json"
+    if eq_cache.is_file():
+        try:
+            raw = json.loads(eq_cache.read_text(encoding="utf-8"))
+            equity = float(raw.get("equity_usdt") or 0)
+            available = float(raw.get("available_usdt") or 0)
+        except Exception:
+            pass
+    pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
+    if pos_cache.is_file():
+        try:
+            raw = json.loads(pos_cache.read_text(encoding="utf-8"))
+            positions = list(raw.get("open_rows") or [])
+        except Exception:
+            pass
+
     live = _load_json(LIVE_FILE, {})
     state = _load_json(STATE_FILE, {})
-    equity, available, positions, acct = _account_fields(live, state)
     running = owl_running()
     events = merge_events(live.get("events"))
     log_cycle = 0
     try:
         from dashboard_cache import _infer_cycle_from_log
-
         log_cycle = _infer_cycle_from_log()
     except Exception:
         pass
@@ -387,7 +424,6 @@ def _status_payload() -> dict:
     agent_health = {}
     try:
         from dashboard_agent import agent_health
-
         agent_health = agent_health()
     except Exception:
         pass
@@ -397,8 +433,8 @@ def _status_payload() -> dict:
         "equity": equity,
         "available": available,
         "positions": positions,
-        "account_ts": int(time.time()),  # Always tick every second
-        "account_source": acct.get("account_source", ""),
+        "account_ts": int(time.time()),
+        "account_source": "blofin_disk",
         "events": events,
         "winRate": live.get("winRate", "--"),
         "lastError": state.get("last_error", live.get("last_error", "")),
