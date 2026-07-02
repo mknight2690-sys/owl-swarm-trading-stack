@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OWL Swarm — Self-Verifying Pipeline</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e14;--card:#161b22;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#a78bfa;--green:#3fb950;--red:#f85149;--yellow:#d29922;--blue:#58a6ff;--orange:#f97316}
+body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--text);padding:16px 20px}
+h1 span{color:var(--orange)}
+.badge{padding:4px 12px;border-radius:12px;font-size:12px;font-weight:600}
+.run{background:#14532d;color:var(--green)}.stop{background:#450a0a;color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px}
+.label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.val{font-size:22px;font-weight:700;margin-top:4px}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:14px;margin-top:14px}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}}
+#graphWrap{position:relative;height:420px;background:#0d1117;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+#graphCanvas{width:100%;height:100%;display:block}
+.graph-legend{font-size:10px;color:var(--dim);margin-top:8px;display:flex;flex-wrap:wrap;gap:10px}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+#equityCanvas{width:100%;height:100px;display:block;margin-top:8px;background:#0d1117;border-radius:6px}
+.roster{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.agent-chip{font-size:9px;padding:3px 7px;border-radius:10px;border:1px solid var(--border);color:var(--dim);transition:all .2s}
+.agent-chip.active{border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,.12);box-shadow:0 0 8px rgba(88,166,255,.25)}
+.agent-chip.pass{border-color:var(--green);color:var(--green);background:rgba(63,185,80,.08)}
+.agent-chip.fail{border-color:var(--red);color:var(--red)}
+.agent-chip.skipped{border-color:#6e7681;color:#8b949e;background:rgba(110,118,129,.1)}
+.task-board{max-height:360px;overflow-y:auto;font-size:11px}
+.task-row{display:flex;gap:6px;padding:7px 8px;border-bottom:1px solid #21262d;align-items:flex-start;transition:background .15s}
+.task-row.active{background:rgba(88,166,255,.08);border-left:3px solid var(--blue)}
+.task-row.done{opacity:.65}
+.task-row.fail{border-left:3px solid var(--red)}
+.task-row.skip{opacity:.4}
+.task-status{font-weight:700;min-width:52px;text-transform:uppercase;font-size:9px;padding-top:2px}
+.st-active{color:var(--blue)}.st-done,.st-pass{color:var(--green)}.st-pending{color:var(--dim)}.st-fail,.st-retry{color:var(--red)}.st-skipped{color:#555}
+.task-job{font-weight:600;color:var(--accent)}
+.task-agent{color:var(--dim);font-size:10px}
+.task-mode{font-size:9px;background:#21262d;padding:1px 5px;border-radius:4px;color:var(--yellow)}
+.section-title{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.log{max-height:200px;overflow-y:auto;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:10px;font-family:Consolas,monospace;font-size:11px}
+.l-success{color:var(--green)}.l-warn{color:var(--yellow)}.l-error{color:var(--red)}.l-info{color:var(--blue)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:6px;border-bottom:1px solid #21262d;text-align:left}
+th{color:var(--dim);font-size:10px}
+.pipeline-bar{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}
+.pipe-step{font-size:10px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);color:var(--dim);transition:all .2s}
+.pipe-step.on{background:rgba(167,139,250,.15);color:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(167,139,250,.2)}
+.pipe-step.done{background:rgba(63,185,80,.1);color:var(--green);border-color:var(--green)}
+.pipe-step.veto{background:rgba(248,81,73,.12);color:var(--red);border-color:var(--red)}
+.pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+</style>
+</head>
+<body>
+<h1><span>OWL</span> Swarm <small style="font-size:13px;color:var(--dim)">Sequential · Self-Healing · Unstoppable Pipeline</small></h1>
+<p style="margin:8px 0">
+  <span class="badge stop" id="badge">...</span>
+  <span id="ts" style="color:var(--dim);font-size:12px;margin-left:8px"></span>
+  <span id="streak" style="margin-left:12px;font-size:11px;color:var(--green)"></span>
+  <span id="verifyGate" style="margin-left:12px;font-size:11px;color:var(--dim)"></span>
+</p>
+
+<div class="grid">
+  <div class="card"><div class="label">Equity</div><div class="val" id="eq">$0</div></div>
+  <div class="card"><div class="label">Available</div><div class="val" id="av">$0</div></div>
+  <div class="card"><div class="label">Cycle</div><div class="val" id="cyc">0</div></div>
+  <div class="card"><div class="label">Active Tasks</div><div class="val" id="taskActive">0</div></div>
+  <div class="card"><div class="label">Win Rate</div><div class="val" id="wr">--</div></div>
+  <div class="card"><div class="label">Verify Fails</div><div class="val" id="vf" style="font-size:16px">0</div></div>
+  <div class="card"><div class="label">Agents</div><div class="val" id="ag">11</div></div>
+</div>
+
+<div class="card"><div class="label">Account Curve (vertical growth target)</div><canvas id="equityCanvas"></canvas></div>
+
+<div class="layout">
+<div>
+  <div class="card">
+    <div class="section-title">Swarm Connection Graph — live self-verifying loop
+      <span id="meshBadge" style="font-weight:400;margin-left:8px;color:var(--accent)"></span>
+      <span id="cliqueBadge" style="font-weight:400;margin-left:6px;color:var(--green)"></span>
+      <span id="polymorphicBadge" style="font-weight:400;margin-left:6px;color:var(--dim)"></span>
+    </div>
+    <div id="graphWrap"><canvas id="graphCanvas"></canvas></div>
+    <div class="graph-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#58a6ff"></span>handoff</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span>spawn</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#3fb950"></span>verify pass</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f85149"></span>reject retry</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>live data</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>compound</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#ec4899"></span>peer_audit mesh</span>
+    </div>
+    <div class="section-title" style="margin-top:12px">Trading Pipeline (sequential)</div>
+    <div class="pipeline-bar" id="pipelineBar"></div>
+  </div>
+  <div class="card" style="margin-top:14px"><div class="section-title">Learning & Assurance</div><div id="learn" style="font-size:12px;line-height:1.6">Loading...</div></div>
+  <div class="card" style="margin-top:14px"><div class="section-title">Open Positions <span id="posEvents" style="margin-left:8px;font-size:10px"></span></div>
+    <table><thead><tr><th>Symbol</th><th>Size</th><th>Entry</th><th>Mark</th><th>PnL</th><th>ROE</th><th>Lev</th></tr></thead><tbody id="pt"></tbody></table>
+  </div>
+</div>
+<div>
+  <div class="card">
+    <div class="section-title">Task Board — all jobs · current work</div>
+    <div id="taskSummary" style="font-size:11px;color:var(--dim);margin-bottom:8px"></div>
+    <div class="section-title" style="margin-top:4px">12 Agents</div>
+    <div class="roster" id="agentRoster"></div>
+    <div class="task-board" id="taskBoard"></div>
+  </div>
+</div>
+</div>
+
+<div class="card" style="margin-top:14px"><div class="section-title">Event Log</div><div class="log" id="log"></div></div>
+
+<script>
+const EDGE_COLORS={spawn:'#a78bfa',handoff:'#58a6ff',verify:'#3fb950',reject:'#f85149',data:'#f59e0b',compound:'#10b981',repair:'#fb923c',oversight:'#818cf8',peer_audit:'#ec4899'};
+const NODE_COLORS={idle:'#30363d',active:'#58a6ff',pass:'#3fb950',fail:'#f85149',repair:'#fb923c',checking:'#f59e0b',skipped:'#6e7681'};
+let lastGraph=null;
+let graphAnim=null;
+
+function fetchJson(url,fallback){
+  return fetch(url,{cache:'no-store'}).then(r=>{
+    if(!r.ok) throw new Error(r.status);
+    return r.json();
+  }).catch(()=>fallback);
+}
+
+function startGraphAnim(){
+  if(graphAnim) return;
+  function tick(){
+    if(lastGraph) drawGraph(lastGraph);
+    graphAnim=requestAnimationFrame(tick);
+  }
+  graphAnim=requestAnimationFrame(tick);
+}
+
+function drawGraph(g){
+  lastGraph=g;
+  const canvas=document.getElementById('graphCanvas');
+  const wrap=document.getElementById('graphWrap');
+  const dpr=window.devicePixelRatio||1;
+  const w=wrap.clientWidth,h=wrap.clientHeight;
+  if(w<10||h<10) return;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  const nodes={};
+  (g.nodes||[]).forEach(n=>{nodes[n.id]={...n,px:n.x*w,py:n.y*h};});
+  const now=Date.now()/1000;
+  const drawEdge=(e,opts)=>{
+    const a=nodes[e.from],b=nodes[e.to];
+    if(!a||!b) return;
+    const col=EDGE_COLORS[e.type]||'#444';
+    const pulse=e.pulsing && e.type!=='peer_audit';
+    ctx.beginPath();
+    ctx.moveTo(a.px,a.py);
+    ctx.lineTo(b.px,b.py);
+    ctx.strokeStyle=opts.strokeStyle||(pulse?col:opts.dimColor||'rgba(100,116,139,0.4)');
+    ctx.lineWidth=opts.lineWidth||(pulse?2.5:1);
+    ctx.setLineDash(e.type==='reject'?[5,4]:[]);
+    ctx.stroke();
+    if(pulse){
+      const t=now%1;
+      ctx.beginPath();
+      ctx.arc(a.px+(b.px-a.px)*t,a.py+(b.py-a.py)*t,4,0,Math.PI*2);
+      ctx.fillStyle=col;
+      ctx.fill();
+    }
+  };
+  (g.edges||[]).filter(e=>e.type==='peer_audit').forEach(e=>{
+    drawEdge(e,{strokeStyle:'rgba(236,72,153,0.06)',lineWidth:0.6});
+  });
+  (g.edges||[]).filter(e=>e.type!=='peer_audit').forEach(e=>{drawEdge(e,{});});
+  ctx.setLineDash([]);
+  Object.values(nodes).forEach(n=>{
+    const st=n.status||'idle';
+    const r=n.role==='orchestrator'?16:n.role==='gate'?14:11;
+    ctx.beginPath();
+    ctx.arc(n.px,n.py,r,0,Math.PI*2);
+    ctx.fillStyle=NODE_COLORS[st]||NODE_COLORS.idle;
+    ctx.fill();
+    if(st==='active'){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();}
+    else if(st==='fail'){ctx.strokeStyle='#f85149';ctx.lineWidth=2;ctx.stroke();}
+    // Dashboard-Agent data-stream pulse animation
+    if(n.id==='Dashboard-Agent' || n.role==='data'){
+      const pulseT=(now%1.5)/1.5;
+      const pulseR=r+4+pulseT*10;
+      ctx.beginPath();
+      ctx.arc(n.px,n.py,pulseR,0,Math.PI*2);
+      ctx.strokeStyle='rgba(88,166,255,'+(1-pulseT)*0.5+')';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+      // Inner dot
+      ctx.beginPath();
+      ctx.arc(n.px,n.py,3,0,Math.PI*2);
+      ctx.fillStyle='#58a6ff';
+      ctx.fill();
+    }
+    ctx.fillStyle='#e6edf3';
+    ctx.font='9px Segoe UI,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(n.label,n.px,n.py+r+11);
+  });
+}
+
+function drawEquity(curve){
+  const c=document.getElementById('equityCanvas');
+  const w=Math.max(200,c.parentElement.clientWidth-28);
+  c.width=w;c.height=100;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,w,100);
+  if(!curve||!curve.length) return;
+  const vals=curve.map(p=>Number(p.equity)||0);
+  const min=Math.min(...vals)*0.998,max=Math.max(...vals)*1.002||1;
+  const range=max-min||0.01;
+  ctx.strokeStyle='#3fb950';ctx.lineWidth=2;ctx.beginPath();
+  curve.forEach((p,i)=>{
+    const x=i/(curve.length-1||1)*(w-10)+5;
+    const y=90-((Number(p.equity)-min)/range)*80;
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle='#8b949e';ctx.font='10px sans-serif';
+  ctx.fillText('$'+vals[vals.length-1].toFixed(4),5,12);
+}
+
+function renderRoster(g, roster){
+  const el=document.getElementById('agentRoster');
+  const nodeMap={};
+  (g.nodes||[]).forEach(n=>{nodeMap[n.id]=n.status||'idle';});
+  const list=roster&&roster.length?roster:[
+    {name:'Trading-Director'},{name:'Portfolio-Manager'},{name:'Sentiment-Agent'},{name:'Quant-Analyst'},
+    {name:'Risk-Manager'},{name:'Execution-Agent'},{name:'Verifier-Agent'},{name:'Ops-Monitor-Agent'},
+    {name:'Tactics-Researcher-Agent'},{name:'Profit-Strategist-Agent'},{name:'Market-Researcher-Agent'},
+    {name:'Dashboard-Agent'}
+  ];
+  el.innerHTML=list.map(a=>{
+    const st=nodeMap[a.name]||'idle';
+    const label=(a.name||'').replace(/-Agent|-Manager/g,'').replace('Trading-Director','Director');
+    return '<span class="agent-chip '+st+'" title="'+a.name+'">'+label+'</span>';
+  }).join('');
+}
+
+function renderTasks(tb){
+  const sum=tb.summary||{};
+  document.getElementById('taskActive').textContent=sum.active||0;
+  document.getElementById('taskSummary').textContent=
+    (sum.done||0)+' done · '+(sum.pending||0)+' pending · '+(sum.failed||0)+' failed · cycle '+(tb.cycle||0);
+  const board=document.getElementById('taskBoard');
+  const order={active:0,pending:1,retry:2,fail:3,done:4,pass:4,skipped:5};
+  const tasks=[...(tb.all_tasks||[])].sort((a,b)=>(order[a.status]??9)-(order[b.status]??9));
+  board.innerHTML=tasks.length?tasks.map(t=>'<div class="task-row '+t.status+'">'+
+    '<span class="task-status st-'+t.status+'">'+t.status+'</span>'+
+    '<div><div class="task-job">'+(t.job_label||t.job)+'</div>'+
+    '<div class="task-agent">'+(t.agent||'?')+' <span class="task-mode">'+(t.mode||'')+'</span></div>'+
+    '<div style="color:#666;font-size:10px;margin-top:2px">'+((t.detail||'').slice(0,80))+'</div></div></div>').join(''):
+    '<div style="padding:12px;color:#8b949e">Seeding task board…</div>';
+  if(tb.equity_curve) drawEquity(tb.equity_curve);
+}
+
+function renderPipeline(g){
+  const steps=['Portfolio','Sentiment','Quant','Risk','Execution'];
+  const ids=['Portfolio-Manager','Sentiment-Agent','Quant-Analyst','Risk-Manager','Execution-Agent'];
+  const bar=document.getElementById('pipelineBar');
+  const next=g.pipeline_next||'';
+  const veto=g.pipeline_veto;
+  const done=next==='done'||next==='';
+  bar.innerHTML=steps.map((s,i)=>{
+    const id=ids[i];
+    const node=(g.nodes||[]).find(n=>n.id===id);
+    const st=node?.status||'idle';
+    let cls='pipe-step';
+    if(done&&st==='pass') cls+=' done';
+    else if(id===next) cls+=' on';
+    else if(st==='pass'||st==='done') cls+=' done';
+    else if(veto&&id==='Risk-Manager') cls+=' veto';
+    else if(st==='skipped'||st==='fail') cls+=' done';
+    const hint=veto&&id==='Risk-Manager'?' (veto)':(st==='skipped'?' (skip)':'');
+    return '<span class="'+cls+'" title="'+(node?.detail||'')+'">'+s+hint+'</span>';
+  }).join('');
+}
+
+function renderPositions(p){
+  document.getElementById('eq').textContent='$'+Number(p.equity||0).toFixed(4);
+  document.getElementById('av').textContent='$'+Number(p.available||0).toFixed(4);
+  const acctAge=p.account_ts?Math.max(0,Math.round(Date.now()/1000-p.account_ts)):null;
+  const acctHint=acctAge!=null?(acctAge<3?'live':acctAge+'s ago'):'';
+  const src=p.account_source?' · '+p.account_source:'';
+  document.getElementById('eq').title='Equity'+(acctHint?(' ('+acctHint+src+')'):'');
+  document.getElementById('av').title='Available margin'+(acctHint?(' ('+acctHint+src+')'):'');
+
+  // Events banner (position open/close, drift alerts)
+  const evEl=document.getElementById('posEvents');
+  if(evEl && p.events && p.events.length){
+    const ev=p.events[p.events.length-1];
+    const evColor=ev.type==='position_opened'?'var(--green)':ev.type==='position_closed'?'var(--red)':'var(--yellow)';
+    evEl.innerHTML='<span style="color:'+evColor+';font-weight:600">'+ev.type.replace('_',' ')+': '+ev.instId+'</span>';
+    evEl.style.opacity='1';
+    setTimeout(()=>{ if(evEl) evEl.style.opacity='0.5'; }, 4000);
+  }
+
+  // Drift alert banner
+  const driftEl=document.getElementById('driftAlert');
+  if(!driftEl){
+    const da=document.createElement('div');
+    da.id='driftAlert'; da.style.cssText='font-size:10px;padding:2px 8px;border-radius:4px;margin-bottom:6px;display:none;';
+    const pt=document.getElementById('pt');
+    if(pt && pt.parentElement) pt.parentElement.insertBefore(da, pt);
+  }
+  const da=document.getElementById('driftAlert');
+  if(da && p.drift_detected){
+    da.style.display='block'; da.style.background='rgba(248,81,73,.15)'; da.style.color='var(--red)';
+    da.textContent='⚠ Drift: '+p.drift_details.join(' · ').slice(0,120);
+  } else if(da) { da.style.display='none'; }
+
+  const pt=document.getElementById('pt');
+  const roeMap=p.roe_by_position||{};
+  if(!p.positions?.length) pt.innerHTML='<tr><td colspan=7 style=color:#8b949e>No positions</td></tr>';
+  else pt.innerHTML=p.positions.map(row=>{
+    const qty=Number(row.positions||0);
+    const side=qty>0?'LONG':qty<0?'SHORT':'—';
+    const upnl=Number(row.unrealizedPnl||0);
+    const upnlPct=Number(row.unrealizedPnlRatio||0)*100;
+    const upnlColor=upnl>=0?'var(--green)':'var(--red)';
+    const sideColor=qty>0?'var(--green)':qty<0?'var(--red)':'#8b949e';
+    const roe=roeMap[row.instId];
+    const roeStr=roe!=null?(roe>=0?'+':'')+roe.toFixed(2)+'%':'';
+    const roeColor=roe!=null?(roe>=0?'var(--green)':'var(--red)'):'';
+    return '<tr><td>'+row.instId+'</td><td style=color:'+sideColor+'>'+side+' '+Math.abs(qty)+'</td><td>'+Number(row.averagePrice||0).toFixed(6)+'</td><td>'+Number(row.markPrice||0).toFixed(6)+'</td><td style=color:'+upnlColor+'>'+(upnl>=0?'+':'')+upnl.toFixed(4)+(upnlPct?(' ('+(upnlPct>=0?'+':'')+upnlPct.toFixed(1)+'%)'):'')+'</td><td style=color:'+roeColor+'>'+roeStr+'</td><td>'+(row.leverage||'?')+'x</td></tr>';
+  }).join('');
+}
+
+function refreshLive(){
+  fetchJson('/api/positions',{equity:0,available:0,positions:[],account_ts:0,account_source:''}).then(renderPositions);
+}
+
+// ── SSE (Server-Sent Events) — max 500ms refresh, no polling ──
+const evtSource = new EventSource('/events');
+
+// Throttle heavy renders so the UI stays smooth
+let _pendingTasks = null;
+let _pendingGraph = null;
+let _pendingLearning = null;
+let _taskRaf = 0;
+let _graphRaf = 0;
+let _learningRaf = 0;
+
+function _flushTasks(){ if(_pendingTasks){ renderTasks(_pendingTasks); _pendingTasks=null; } _taskRaf=0; }
+function _flushGraph(){ if(_pendingGraph){ lastGraph=_pendingGraph; drawGraph(_pendingGraph); renderRoster(_pendingGraph,_pendingGraph.roster); renderPipeline(_pendingGraph); } _graphRaf=0; }
+function _flushLearning(){ if(_pendingLearning){ const l=_pendingLearning; document.getElementById('learn').innerHTML='<div><b>Last learned:</b> '+((l.last_learned||{}).title||'—')+'</div><div style="margin-top:4px"><b>Last improvement:</b> '+((l.last_improvement||{}).title||'—')+'</div><div style="margin-top:4px"><b>Last self-fix:</b> '+((l.last_self_fix||{}).title||'—')+'</div>'; } _learningRaf=0; }
+
+evtSource.onmessage = function(e){
+  try{
+    const msg = JSON.parse(e.data);
+
+    // Live equity/positions — every 500ms, highest priority
+    if(msg.type === 'live'){
+      renderPositions(msg.data);
+      const eqEl=document.getElementById('eq'), avEl=document.getElementById('av');
+      if(eqEl) eqEl.textContent='$'+Number(msg.data.equity||0).toFixed(4);
+      if(avEl) avEl.textContent='$'+Number(msg.data.available||0).toFixed(4);
+      // Update timestamp on every live tick so it counts by the second
+      const tsEl=document.getElementById('ts');
+      if(tsEl) tsEl.innerHTML='<span class="pulse-dot"></span>Updated '+new Date().toLocaleTimeString();
+    }
+
+    // Full status — every 2s
+    if(msg.type === 'status'){
+      const s = msg.data;
+      const tsEl=document.getElementById('ts');
+      tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+new Date().toLocaleTimeString();
+      const b=document.getElementById('badge');
+      b.textContent=s.running?'RUNNING':'STOPPED';
+      b.className='badge '+(s.running?'run':'stop');
+      document.getElementById('cyc').textContent=s.cycle||0;
+      document.getElementById('wr').textContent=s.winRate||'--';
+      document.getElementById('ag').textContent=s.agentsActive||12;
+      renderPositions(s);
+      // Dashboard-Agent health indicator
+      const da=s.dashboard_agent||{};
+      if(da.status==='active'){
+        const daBadge=document.getElementById('daBadge');
+        if(!daBadge){
+          const span=document.createElement('span');
+          span.id='daBadge'; span.className='badge run'; span.style.marginLeft='8px'; span.style.fontSize='10px';
+          span.textContent='Dashboard-Agent';
+          tsEl.parentElement.appendChild(span);
+        }
+      }
+      // Event log
+      document.getElementById('log').innerHTML=(s.events||[]).slice(-35).map(e=>'<div class="l-'+(e.level||'info')+'">'+(e.message||'')+'</div>').join('')||'<div style=color:#8b949e>Waiting for events…</div>';
+      // Verify gate status
+      const vg=document.getElementById('verifyGate');
+      if(s.lastError){ vg.textContent='Error: '+s.lastError; vg.style.color='var(--red)'; }
+      else { vg.textContent=''; vg.style.color='var(--dim)'; }
+    }
+
+    // Tasks — throttled to next frame so 500ms SSE doesn't jank the UI
+    if(msg.type === 'tasks'){
+      _pendingTasks = msg.data;
+      if(!_taskRaf) _taskRaf = requestAnimationFrame(_flushTasks);
+    }
+
+    // Swarm graph — throttled
+    if(msg.type === 'graph'){
+      _pendingGraph = msg.data;
+      if(!_graphRaf) _graphRaf = requestAnimationFrame(_flushGraph);
+    }
+
+    // Learning — throttled
+    if(msg.type === 'learning'){
+      _pendingLearning = msg.data;
+      if(!_learningRaf) _learningRaf = requestAnimationFrame(_flushLearning);
+    }
+
+  }catch(err){ console.error('SSE parse error', err); }
+};
+
+evtSource.onerror = function(){
+  console.warn('SSE connection lost, reconnecting...');
+};
+
+// One-time fetch for any data that arrives before SSE connects
+fetchJson('/api/positions',{equity:0,available:0,positions:[],account_ts:0,account_source:''}).then(renderPositions);
+fetchJson('/api/status',{running:false,cycle:0,equity:0,available:0,positions:[],events:[],winRate:'--',agentsActive:11,agentRoster:[]}).then(s=>{
+  const tsEl=document.getElementById('ts');
+  tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+new Date().toLocaleTimeString();
+  const b=document.getElementById('badge');
+  b.textContent=s.running?'RUNNING':'STOPPED'; b.className='badge '+(s.running?'run':'stop');
+  document.getElementById('cyc').textContent=s.cycle||0;
+  document.getElementById('wr').textContent=s.winRate||'--';
+  document.getElementById('ag').textContent=s.agentsActive||11;
+  renderPositions(s);
+});
+fetchJson('/api/tasks',{summary:{active:0,pending:0,done:0,failed:0},all_tasks:[],equity_curve:[],cycle:0}).then(renderTasks);
+fetchJson('/api/swarm-graph',{nodes:[],edges:[],verify_fail_history:[],convergence_streak:0}).then(g=>{ lastGraph=g; drawGraph(g); renderRoster(g,g.roster); renderPipeline(g); });
+fetchJson('/api/learning',{}).then(l=>{ document.getElementById('learn').innerHTML='<div><b>Last learned:</b> '+((l.last_learned||{}).title||'—')+'</div><div style="margin-top:4px"><b>Last improvement:</b> '+((l.last_improvement||{}).title||'—')+'</div><div style="margin-top:4px"><b>Last self-fix:</b> '+((l.last_self_fix||{}).title||'—')+'</div>'; });
+startGraphAnim();
+window.addEventListener('resize',()=>{if(lastGraph) drawGraph(lastGraph);});
+</script>
+</body>
+</html>
