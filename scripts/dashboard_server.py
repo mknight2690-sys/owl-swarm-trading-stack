@@ -153,7 +153,10 @@ _AGENT_TICK_SEC = 3.0
 
 
 def _agent_tick_loop() -> None:
-    """Run Dashboard-Agent drift detection in background, never blocking SSE."""
+    """Run Dashboard-Agent drift detection in background, never blocking SSE.
+    Only writes position corrections, drift flags, events — NEVER equity/available.
+    equity_stream.py is the sole source of equity/available (calculated from WS tickers).
+    """
     while True:
         try:
             from dashboard_agent import tick_dashboard_agent
@@ -162,8 +165,7 @@ def _agent_tick_loop() -> None:
             live = _load_json(LIVE_FILE, {})
             live.update(
                 {
-                    "equity": corrected.get("equity", live.get("equity", 0)),
-                    "available": corrected.get("available", live.get("available", 0)),
+                    # Positions, ROE, events, drift info only — equity/available from equity_stream.py
                     "positions": corrected.get("positions", live.get("positions", [])),
                     "roe_by_position": corrected.get("roe_by_position", {}),
                     "events": corrected.get("events", live.get("events", [])),
@@ -287,18 +289,12 @@ def _refresh_account(force: bool = False) -> None:
             except Exception:
                 pass
 
-        # ── STEP 3: Write to owl-live.json ──
-        if not positions and equity <= 0 and available <= 0:
-            # Nothing to update — keep existing data so dashboard doesn't flicker
-            return
-
+        # ── STEP 3: Write positions to owl-live.json — NEVER overwrite equity/available ──
+        # equity_stream.py is the sole source of equity/available (calculated from WS tickers)
         live = _load_json(LIVE_FILE, {})
         live.update(
             {
-                "equity": equity,
-                "available": available,
                 "positions": positions,
-                "account_ts": int(now),  # Always tick every second
                 "account_source": source,
                 "position_count": len(positions),
             }
