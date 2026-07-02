@@ -118,6 +118,17 @@ th{color:var(--dim);font-size:10px}
 <script>
 const EDGE_COLORS={spawn:'#a78bfa',handoff:'#58a6ff',verify:'#3fb950',reject:'#f85149',data:'#f59e0b',compound:'#10b981',repair:'#fb923c',oversight:'#818cf8',peer_audit:'#ec4899'};
 const NODE_COLORS={idle:'#30363d',active:'#58a6ff',pass:'#3fb950',fail:'#f85149',repair:'#fb923c',checking:'#f59e0b',skipped:'#6e7681'};
+// Server-synced timestamp for per-second ticking
+let _lastServerTs=Math.floor(Date.now()/1000);
+function _fmtTs(unixSec){
+  const d=new Date((unixSec||0)*1000);
+  return d.toLocaleTimeString('en-US',{hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
+}
+setInterval(function(){
+  _lastServerTs++;
+  const tsEl=document.getElementById('ts');
+  if(tsEl) tsEl.innerHTML='<span class="pulse-dot"></span>Updated '+_fmtTs(_lastServerTs);
+},1000);
 let lastGraph=null;
 let graphAnim=null;
 
@@ -363,16 +374,16 @@ evtSource.onmessage = function(e){
       const eqEl=document.getElementById('eq'), avEl=document.getElementById('av');
       if(eqEl) eqEl.textContent='$'+Number(msg.data.equity||0).toFixed(4);
       if(avEl) avEl.textContent='$'+Number(msg.data.available||0).toFixed(4);
-      // Update timestamp on every live tick so it counts by the second
-      const tsEl=document.getElementById('ts');
-      if(tsEl) tsEl.innerHTML='<span class="pulse-dot"></span>Updated '+new Date().toLocaleTimeString();
+      // Sync server timestamp for smooth per-second ticking
+      if(msg.data.account_ts) _lastServerTs = msg.data.account_ts;
     }
 
     // Full status — every 2s
     if(msg.type === 'status'){
       const s = msg.data;
+      if(s.account_ts) _lastServerTs = s.account_ts;
       const tsEl=document.getElementById('ts');
-      tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+new Date().toLocaleTimeString();
+      if(tsEl) tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+_fmtTs(_lastServerTs);
       const b=document.getElementById('badge');
       b.textContent=s.running?'RUNNING':'STOPPED';
       b.className='badge '+(s.running?'run':'stop');
@@ -428,7 +439,8 @@ evtSource.onerror = function(){
 fetchJson('/api/positions',{equity:0,available:0,positions:[],account_ts:0,account_source:''}).then(renderPositions);
 fetchJson('/api/status',{running:false,cycle:0,equity:0,available:0,positions:[],events:[],winRate:'--',agentsActive:11,agentRoster:[]}).then(s=>{
   const tsEl=document.getElementById('ts');
-  tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+new Date().toLocaleTimeString();
+  if(s.account_ts) _lastServerTs=s.account_ts;
+  if(tsEl) tsEl.innerHTML=(s.running?'<span class="pulse-dot"></span>':'')+'Updated '+_fmtTs(_lastServerTs);
   const b=document.getElementById('badge');
   b.textContent=s.running?'RUNNING':'STOPPED'; b.className='badge '+(s.running?'run':'stop');
   document.getElementById('cyc').textContent=s.cycle||0;
