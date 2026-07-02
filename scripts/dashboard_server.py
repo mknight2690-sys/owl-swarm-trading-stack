@@ -51,14 +51,9 @@ _SSE_INTERVAL_SEC = 0.5  # max 500ms refresh for live data
 
 
 def _stream_equity_loop() -> None:
+    """DISABLED — equity streamed directly from blofin disk cache in _positions_payload."""
     while True:
-        try:
-            from equity_stream import refresh_streaming_equity
-
-            refresh_streaming_equity(write_curve=True)
-        except Exception:
-            pass
-        time.sleep(_STREAM_EQUITY_SEC)
+        time.sleep(60)
 
 
 def _start_stream_equity() -> None:
@@ -66,16 +61,14 @@ def _start_stream_equity() -> None:
     if _stream_thread_started:
         return
     _stream_thread_started = True
-    threading.Thread(target=_stream_equity_loop, name="owl-equity-stream", daemon=True).start()
+    # DISABLED — equity read directly from blofin disk cache
+    pass
 
 
 def _account_refresh_loop() -> None:
+    """DISABLED — positions streamed directly from blofin disk cache in _positions_payload."""
     while True:
-        try:
-            _refresh_account(force=False)  # ← FIX: respect throttle, don't hammer API
-        except Exception:
-            pass
-        time.sleep(_ACCOUNT_REFRESH_SEC)
+        time.sleep(60)
 
 
 def _start_account_refresh() -> None:
@@ -83,7 +76,8 @@ def _start_account_refresh() -> None:
     if _account_thread_started:
         return
     _account_thread_started = True
-    threading.Thread(target=_account_refresh_loop, name="owl-dash-account", daemon=True).start()
+    # DISABLED — positions read directly from blofin disk cache
+    pass
 
 
 # ── SSE broadcast ──
@@ -335,21 +329,43 @@ def _account_fields(live: dict, state: dict) -> tuple[float, float, list, dict]:
 
 
 def _positions_payload() -> dict:
-    """Return live snapshot from owl-live.json — FAST, never blocks."""
-    live = _load_json(LIVE_FILE, {})
+    """Return live snapshot from Blofin disk cache — actual equity/available, no calculation."""
     now = int(time.time())
+    equity = 0.0
+    available = 0.0
+    positions = []
+
+    # Read actual Blofin equity from trading engine cache
+    eq_cache = BLOFIN_ROOT / "outputs" / "equity-cache.json"
+    if eq_cache.is_file():
+        try:
+            raw = json.loads(eq_cache.read_text(encoding="utf-8"))
+            equity = float(raw.get("equity_usdt") or 0)
+            available = float(raw.get("available_usdt") or 0)
+        except Exception:
+            pass
+
+    # Read actual Blofin positions from trading engine cache
+    pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
+    if pos_cache.is_file():
+        try:
+            raw = json.loads(pos_cache.read_text(encoding="utf-8"))
+            positions = list(raw.get("open_rows") or [])
+        except Exception:
+            pass
+
     return {
-        "equity": float(live.get("equity") or 0),
-        "available": float(live.get("available") or 0),
-        "positions": live.get("positions") or [],
-        "account_ts": now,  # Always tick every second
-        "account_source": live.get("account_source", ""),
-        "position_count": len(live.get("positions") or []),
-        "roe_by_position": live.get("roe_by_position", {}),
-        "events": live.get("events", []),
-        "drift_detected": live.get("drift_detected", False),
-        "drift_details": live.get("drift_details", []),
-        "corrections": live.get("corrections", []),
+        "equity": equity,
+        "available": available,
+        "positions": positions,
+        "account_ts": now,
+        "account_source": "blofin_disk",
+        "position_count": len(positions),
+        "roe_by_position": {},
+        "events": [],
+        "drift_detected": False,
+        "drift_details": [],
+        "corrections": [],
     }
 
 
