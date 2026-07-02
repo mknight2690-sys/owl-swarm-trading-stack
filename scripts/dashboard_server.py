@@ -154,19 +154,17 @@ _AGENT_TICK_SEC = 3.0
 
 def _agent_tick_loop() -> None:
     """Run Dashboard-Agent drift detection in background, never blocking SSE.
-    Only writes position corrections, drift flags, events — NEVER equity/available.
-    equity_stream.py is the sole source of equity/available (calculated from WS tickers).
+    NEVER writes positions — equity_stream.py is the sole source of positions.
+    Only writes metadata: drift_detected, events, corrections, roe_by_position.
     """
     while True:
         try:
             from dashboard_agent import tick_dashboard_agent
             corrected = tick_dashboard_agent()
-            # Write corrections back to owl-live.json so SSE loop picks them up
+            # Write ONLY metadata to owl-live.json — never positions/equity/available
             live = _load_json(LIVE_FILE, {})
             live.update(
                 {
-                    # Positions, ROE, events, drift info only — equity/available from equity_stream.py
-                    "positions": corrected.get("positions", live.get("positions", [])),
                     "roe_by_position": corrected.get("roe_by_position", {}),
                     "events": corrected.get("events", live.get("events", [])),
                     "drift_detected": corrected.get("drift_detected", False),
@@ -289,17 +287,20 @@ def _refresh_account(force: bool = False) -> None:
             except Exception:
                 pass
 
-        # ── STEP 3: Write positions to owl-live.json — NEVER overwrite equity/available ──
-        # equity_stream.py is the sole source of equity/available (calculated from WS tickers)
+        # ── STEP 3: Write positions to owl-live.json ONLY when position set changes ──
+        # equity_stream.py is the sole source of equity/available and updates mark prices
+        # We only touch positions when a new position opened or one closed (detected by instId set change)
         live = _load_json(LIVE_FILE, {})
-        live.update(
-            {
-                "positions": positions,
-                "account_source": source,
-                "position_count": len(positions),
-            }
-        )
-        LIVE_FILE.write_text(json.dumps(live, indent=2, default=str), encoding="utf-8")
+        live_inst_ids = {str(p.get("instId", "")) for p in (live.get("positions") or [])}
+        disk_inst_ids = {str(p.get("instId", "")) for p in positions}
+
+        if live_inst_ids != disk_inst_ids:
+            # Position set changed — new open or close detected
+            live["positions"] = positions
+            live["account_source"] = source + "_position_change"
+            live["position_count"] = len(positions)
+            LIVE_FILE.write_text(json.dumps(live, indent=2, default=str), encoding="utf-8")
+        # If instId sets match, do NOTHING — equity_stream.py is already keeping mark prices updated
         _last_account = now
     except Exception:
         pass

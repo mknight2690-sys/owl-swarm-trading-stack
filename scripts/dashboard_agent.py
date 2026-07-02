@@ -314,67 +314,30 @@ class DashboardAgent:
         return None
 
     def _fix_purge_ghost_positions(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
-        """Fix #1: When cached positions exist but disk/live says they're closed, purge them."""
+        """Fix #1: When cached positions exist but disk/live says they're closed, log it only."""
         snap_pos = {str(p.get("instId", "")): p for p in snapshot.get("positions", [])}
         trusted_pos = {str(p.get("instId", "")): p for p in trusted.get("positions", [])}
         ghost = set(snap_pos.keys()) - set(trusted_pos.keys())
-        purged = []
-        if ghost:
-            # Actually write the corrected positions back to owl-live.json
-            live_data = self._read_raw_live()
-            if live_data:
-                kept = [p for p in live_data.get("positions", []) if str(p.get("instId", "")) in trusted_pos]
-                live_data["positions"] = kept
-                live_data["position_count"] = len(kept)
-                live_data["updated_at"] = int(time.time())
-                live_data["account_source"] = "dashboard_agent_purged"
-                try:
-                    LIVE_FILE.write_text(json.dumps(live_data, indent=2, default=str), encoding="utf-8")
-                except Exception:
-                    pass
-                purged = list(ghost)
-        return {"action": "purge_ghost_positions", "reason": f"Purged stale positions: {purged}", "applied": bool(purged), "purged": purged}
+        purged = list(ghost) if ghost else []
+        return {"action": "purge_ghost_positions", "reason": f"Ghost positions detected: {purged}", "applied": bool(ghost), "purged": purged}
 
     def _fix_use_disk_fallback(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
-        """Fix #2: When live API rate-limited, use disk cache as ground truth."""
+        """Fix #2: When live API rate-limited, log disk fallback only — never write to file."""
         disk = self._fetch_disk_cache()
-        if disk.get("positions"):
-            # Write disk positions into owl-live.json so dashboard shows them
-            live_data = self._read_raw_live() or {}
-            live_data["positions"] = disk["positions"]
-            live_data["equity"] = disk.get("equity", live_data.get("equity", 0))
-            live_data["available"] = disk.get("available", live_data.get("available", 0))
-            live_data["position_count"] = len(disk["positions"])
-            live_data["updated_at"] = int(time.time())
-            live_data["account_source"] = "disk_fallback"
-            try:
-                LIVE_FILE.write_text(json.dumps(live_data, indent=2, default=str), encoding="utf-8")
-            except Exception:
-                pass
-            return {"action": "disk_fallback_positions", "reason": "Live API rate-limited, used disk cache", "applied": True, "disk_positions": len(disk["positions"])}
-        return {"action": "disk_fallback_positions", "reason": "Disk cache empty too", "applied": False}
+        return {"action": "disk_fallback_positions", "reason": "Live API rate-limited, disk cache has positions", "applied": bool(disk.get("positions")), "disk_positions": len(disk.get("positions", []))}
 
     def _fix_override_mark_price(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
-        """Fix #3: When WS mark price is stale, override with trusted mark price."""
+        """Fix #3: When WS mark price is stale, log it — equity_stream.py handles actual updates."""
         snap_pos = {str(p.get("instId", "")): p for p in snapshot.get("positions", [])}
         trusted_pos = {str(p.get("instId", "")): p for p in trusted.get("positions", [])}
         overridden = []
-        live_data = self._read_raw_live()
-        if live_data:
-            for pos in live_data.get("positions", []):
-                inst = str(pos.get("instId", ""))
-                if inst in trusted_pos:
-                    trusted_mark = float(trusted_pos[inst].get("markPrice") or 0)
-                    if trusted_mark > 0 and pos.get("markPrice") != trusted_mark:
-                        pos["markPrice"] = trusted_mark
-                        overridden.append(inst)
-            if overridden:
-                live_data["updated_at"] = int(time.time())
-                try:
-                    LIVE_FILE.write_text(json.dumps(live_data, indent=2, default=str), encoding="utf-8")
-                except Exception:
-                    pass
-        return {"action": "override_mark_prices", "reason": f"Overrode stale WS marks for {overridden}", "applied": bool(overridden), "overridden": overridden}
+        for inst, pos in snap_pos.items():
+            if inst in trusted_pos:
+                trusted_mark = float(trusted_pos[inst].get("markPrice") or 0)
+                snap_mark = float(pos.get("markPrice") or 0)
+                if trusted_mark > 0 and snap_mark > 0 and abs(trusted_mark - snap_mark) / trusted_mark > 0.005:
+                    overridden.append(inst)
+        return {"action": "override_mark_prices", "reason": f"Stale marks for {overridden}", "applied": bool(overridden), "overridden": overridden}
 
     def _fix_restore_equity(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
         """Fix #4: When equity is 0/negative, restore from state.json or disk cache."""
