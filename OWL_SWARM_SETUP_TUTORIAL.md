@@ -1,7 +1,7 @@
 # OWL SWARM TRADING STACK — Complete A-to-Z Setup Tutorial
 
-**Version:** 1.5 (The "Stupid Easy" Edition) | **Updated:** 2026-07-03  
-**Who this is for:** Everyone. If you've never heard of crypto, start here. If you have $3, start here. If you have $300, start here. If you know nothing about computers, start here. We will walk you through every single click.
+**Version:** 1.6 (Free-Forever AI Agent + Welcoming Edition) | **Updated:** 2026-07-03  
+**Who this is for:** Everyone. Never traded crypto? Start here. Have $3? Start here. Have $300? Start here. Never used a command line? Start here. We will walk you through every single step. No judgment. No assumptions. Just help.
 
 > **Welcome.** You are about to set up a robot that trades crypto for you while you sleep. It costs $0 to run. You can start with $3, $5, $50, or whatever you feel comfortable with. There is no minimum. The bot works with any amount. Your $3 can grow. Your $5 can grow. Let it compound. This is real.
 
@@ -32,20 +32,20 @@
 
 We have **two paths** for you. Pick the one that fits you.
 
-### Path A: The "Stupid Easy" Way (RECOMMENDED for beginners)
+### Path A: The AI Helper Way (RECOMMENDED for beginners)
 
-**You use a free AI helper to do ALL the hard stuff for you.** You literally copy and paste one prompt, and the AI installs everything, creates your files, and launches the bot. You just watch.
+**You use a free AI assistant to guide you through every step.** You copy and paste one prompt into a free AI chat, and it tells you exactly what to click, what to type, and what to expect at each step. It's like having a patient friend sitting next to you who knows exactly what to do.
 
 **What you need:**
-- [Cursor](https://cursor.com) — a free AI code editor (like a really smart helper that types for you)
+- A free AI chat (Kimi, ChatGPT, or Claude — all have free tiers)
 - The single prompt we give you below
-- About 15 minutes of watching the AI work
+- About 15–20 minutes of following along
 
-**Why this way?** You don't need to understand git, npm, pip, PowerShell, or any of that scary stuff. The AI does it. You just sit back and let it happen. If you get stuck, you ask the AI "what went wrong?" and it fixes it.
+**Why this way?** You don't need to understand git, npm, pip, or any of that technical stuff. The AI explains each step in plain English. If you get stuck, you ask "what went wrong?" and it helps you fix it. This is the path most people should take.
 
-### Path B: The Manual Way (for people who want to see every step)
+### Path B: The Step-by-Step Way (for people who want to see every detail)
 
-**You do each step yourself.** We tell you exactly where to click, what to type, and what to expect. Every single step is explained like you're five years old. No knowledge assumed.
+**You do each step yourself while reading our guide.** We tell you exactly where to click, what to type, and what to expect. Every step is explained in plain English. No technical knowledge assumed.
 
 **What you need:**
 - Command Prompt (we show you where to find it)
@@ -54,29 +54,29 @@ We have **two paths** for you. Pick the one that fits you.
 
 **Why this way?** You learn how everything works. If something breaks later, you know how to fix it. But honestly, Path A is easier and works just as well.
 
-> **Our recommendation:** Start with **Path A**. If the AI hits a problem, switch to Path B for that one step. There is no shame in either path. The goal is getting your bot running so your money can grow.
+> **Our recommendation:** Start with **Path A**. The AI will hold your hand through everything. If the AI hits a problem that stumps it, switch to Path B for just that one step. There is no wrong way. The goal is getting your bot running so your money can grow.
 
 ---
 
 ## PHASE 0: WHAT YOU NEED
 
 ### Hardware (What Computer)
-- **Any computer that can stay on.** A laptop, desktop, old computer, whatever. It just needs to not go to sleep while the bot runs.
+- **Any computer that can stay on.** A laptop, desktop, old computer — whatever you have. It just needs to stay awake while the bot runs.
 - **Windows 10 or 11** (Mac users: see [Mac section at the bottom](#mac-users--read-this))
 - **4GB RAM minimum** — basically any computer made in the last 10 years
-- **Stable internet** — WiFi or Ethernet, doesn't matter
+- **Stable internet** — WiFi or Ethernet, both work fine
 - **Chrome browser** — if you don't have it, go to [google.com/chrome](https://google.com/chrome) and click "Download Chrome"
 
 ### Money (How Much)
-- **Whatever you feel comfortable losing.** Seriously. This is the golden rule of trading bots. Only put in money you can afford to lose.
+- **Whatever you feel comfortable with.** This is the golden rule. Only put in money you can afford to lose.
 - **$3 is enough.** The bot will trade with $3. It will find coins that fit a $3 balance. It will be slower, but it will work.
-- **$5 is the sweet spot.** More coins become tradeable. You'll see activity sooner.
+- **$5 is a nice starting point.** More coins become tradeable. You'll see activity sooner.
 - **$50 is great.** The bot can trade many more coins. You'll see daily activity.
 - **There is no maximum.** People run this bot with $10,000. The bot scales with your money.
 - **The bot is free to run.** No monthly fees. No subscriptions. The only cost is your starting capital and a one-time $1 network fee when you move money to Blofin.
 
 ### Time
-- **First time setup:** 30 minutes (Path A) or 60 minutes (Path B)
+- **First time setup:** 20 minutes (Path A) or 60 minutes (Path B)
 - **Every day after:** 30 seconds (double-click your icon, done)
 
 ### Accounts to Create (All Free)
@@ -104,7 +104,7 @@ Coinbase is the easiest place to buy crypto with a debit card. It's like a regul
 7. Click **Buy now** and pay with your debit card
 8. Done! You now own USDT.
 
-> **Don't have $5?** That's okay. Buy $3. The bot works with $3. Buy whatever you can afford. There is no shame in starting small. Every dollar counts. Let it compound.
+> **Don't have $5?** That's perfectly okay. Buy $3. The bot works with $3. Buy whatever you can afford. There is no shame in starting small. Every dollar counts. Let it compound.
 
 ### Step 1.2: Send Your USDT to Blofin
 
@@ -138,7 +138,7 @@ A VPN is like a mask for your internet. It hides where you really are.
 
 **Why this matters:** Blofin (and many crypto exchanges) blocks people from certain countries — especially the United States, Canada, and China. If Blofin sees your real location, they might block your account. A VPN makes you appear to be in a country that Blofin accepts.
 
-**Also:** Your internet provider can see every website you visit. A VPN stops that. It's just good privacy hygiene, especially when dealing with money.
+**Also:** Your internet provider can see every website you visit. A VPN stops that. It's just good privacy practice, especially when dealing with money.
 
 ### How the Free Version Works
 
@@ -148,6 +148,17 @@ ProtonVPN's free version randomly gives you one of three countries. You do NOT g
 - **United States** — Blofin blocks this ❌
 
 So you click "connect" and hope you get Netherlands or Japan. If you get the United States, you click "Change Server" and try again.
+
+### Blofin-Blocked Countries (What You Want to AVOID)
+
+If ProtonVPN assigns you to any of these, you MUST change server:
+- **United States** (all states)
+- **Canada**
+- **Mainland China**
+- **Russia**
+- **North Korea, Iran, Syria, Cuba, Sudan** (sanctioned nations)
+
+> **You want Netherlands or Japan.** Those are the only Blofin-accepted countries on ProtonVPN free tier.
 
 ### Step 2.1: Download ProtonVPN
 
@@ -221,6 +232,8 @@ Blofin is the exchange where your bot trades. It's where your money lives while 
 8. Done! You have a Blofin account.
 
 > **If Blofin asks for your country during signup:** Say **Netherlands** or **Japan** (whichever your VPN shows). Do NOT say your real country if you're in the US, Canada, or a blocked region.
+
+> **About the $20,000/day limit:** This is per day. If you make $500/day in profits, you can withdraw all of it. If you make $20,000 in one day, you can withdraw all of it. The limit resets every 24 hours. For most people starting with $5, this limit is plenty. If you grow your account and need more than $20K/day, see Phase 12.
 
 ### Step 3.2: Set Up 2FA (Two-Factor Authentication)
 
@@ -389,7 +402,7 @@ Git is a tool that downloads code from the internet. Think of it like a speciali
 
 **How to check if it worked:**
 1. Press **Windows key**, type **"cmd"**, press **Enter**
-2. A black window opens. This is **Command Prompt**. Don't be scared of it. It's just a place where you type commands.
+2. A black window opens. This is **Command Prompt**. Don't worry — it's just a place where you type commands.
 3. Type exactly this (then press Enter):
    ```
    git --version
@@ -397,7 +410,7 @@ Git is a tool that downloads code from the internet. Think of it like a speciali
 4. You should see something like: `git version 2.45.0`
 5. If you see an error saying "git is not recognized," restart your computer and try again. Sometimes Windows needs a restart to notice new software.
 
-> **What is Command Prompt?** It's a black box where you type text commands instead of clicking buttons. It looks scary but it's just another way to control your computer. Every step below tells you EXACTLY what to type, so you can copy and paste if needed. Nothing will break if you type the wrong thing — you can just close the window and start over.
+> **What is Command Prompt?** It's a black box where you type text commands instead of clicking buttons. Every step below tells you EXACTLY what to type, so you can copy and paste. Nothing will break if you type the wrong thing — you can just close the window and start over.
 
 ### Step 6.2: Install Python 3.12
 
@@ -456,7 +469,7 @@ You need to open Command Prompt to download the code. Here's how:
 3. Press **Enter** on your keyboard
 4. A black window opens with white text. This is Command Prompt.
 
-> **What you're looking at:** The black window shows your current location on your computer, like `C:~Users~YourName>`. You can type commands here and the computer will do them. Think of it like texting instructions to your computer.
+> **What you're looking at:** The black window shows your current location on your computer, like `C:\Users\YourName>`. You can type commands here and the computer will do them. Think of it like texting instructions to your computer.
 
 ### Step 7.2: Download the Code
 
@@ -471,7 +484,7 @@ git clone https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
 - `cd %USERPROFILE%` — moves to your home folder (where your user files live)
 - `git clone ...` — downloads the entire bot from the internet
 
-**What to expect:** You will see a bunch of text scrolling. Words like "Cloning into...", "Receiving objects...", "Resolving deltas..." will appear. This is normal. It's just downloading files. When it's done, you'll see your prompt again (the `C:~...>` thing). This takes about 30 seconds to 2 minutes depending on your internet speed.
+**What to expect:** You will see a bunch of text scrolling. Words like "Cloning into...", "Receiving objects...", "Resolving deltas..." will appear. This is normal. It's just downloading files. When it's done, you'll see your prompt again (the `C:\...>` thing). This takes about 30 seconds to 2 minutes depending on your internet speed.
 
 **How to check if it worked:**
 In the same Command Prompt window, type:
@@ -501,7 +514,7 @@ You already saved your Blofin keys to `My Blofin Keys.txt` on your Desktop in Ph
 8. Open a new Notepad window (Windows key, type "notepad", press Enter)
 9. Paste the text (Ctrl + V)
 10. Click **File → Save As**
-11. Navigate to: `C:~Users~YOUR_USERNAME~OneDrive~Documents`
+11. Navigate to: `C:\Users\YOUR_USERNAME\OneDrive\Documents`
     - To get there: In the Save As dialog, click on your username in the left sidebar, then double-click "OneDrive", then double-click "Documents"
 12. In the **File name** box, type exactly: `1B Blofin API.txt`
 13. Make sure **Save as type** is set to `All Files (*.*)` (NOT "Text Documents")
@@ -523,7 +536,7 @@ Same process, but for your OpenRouter key.
 7. Open a new Notepad window
 8. Paste (Ctrl + V)
 9. Click **File → Save As**
-10. Navigate to: `C:~Users~YOUR_USERNAME~OneDrive~Documents`
+10. Navigate to: `C:\Users\YOUR_USERNAME\OneDrive\Documents`
 11. In the **File name** box, type exactly: `1BananaOnTheWall Openrouter API Key.txt`
 12. Make sure **Save as type** is `All Files (*.*)`
 13. Click **Save**
@@ -660,9 +673,9 @@ Once everything is set up, running the bot is effortless.
 5. Leave your computer running (don't close the lid, don't put it to sleep)
 
 ### Evening (Optional)
-1. Check the dashboard for any open positions
+1. Check dashboard for any open positions
 2. If you want to stop for the night: double-click **Stop OWL Swarm**
-3. Your positions stay open on the exchange — they'll be managed when you restart
+3. Positions stay open on the exchange — they'll be managed when you restart
 
 ### Keep Your Computer Awake
 If your computer goes to sleep, the bot stops. Here's how to keep it awake:
@@ -686,11 +699,11 @@ When you see the bot working and you want to add more money:
 
 ## PHASE 12: WHEN YOUR MONEY GROWS (OPTIONAL PALAU ID)
 
-> **Is $20,000 per day enough for you?** Without verifying your identity, Blofin lets you withdraw up to $20,000 USDT every 24 hours. If you're starting with $5, this limit is laughably high. You will never touch it. If you grow to $1,000, you still won't touch it. If you grow to $10,000, you still won't touch it.
+> **Is $20,000 per day enough for you?** Without verifying your identity, Blofin lets you withdraw up to $20,000 USDT every 24 hours. If you're starting with $5, this limit is more than enough. You will not touch it for a long time. If you grow to $1,000, you still won't touch it. If you grow to $10,000, you still won't touch it.
 >
-> **But when your account grows serious** — when you have $100,000+ and you want to pull out $50,000 in a single day — then you need higher limits. And if you live in a country that Blofin blocks (like the US or Canada), you can't verify your identity with your real passport.
+> **But when your account grows** — when you have $100,000+ and you want to pull out $50,000 in a single day — then you need higher limits. And if you live in a country that Blofin blocks (like the US or Canada), you can't verify your identity with your real passport.
 >
-> **That's where the Palau ID comes in.** This is the upgrade path. This is for when your $5 has compounded into real money and you need to move it freely. This is what serious traders do.
+> **That's where the Palau ID comes in.** This is the upgrade path. This is for when your $5 has compounded into real money and you need to move it freely. This is what experienced traders do when they scale up.
 
 ### What Is the Palau ID?
 
@@ -704,7 +717,7 @@ The **Republic of Palau Digital Residency ID** is a real government-issued digit
 
 ### Why Palau ID?
 
-1. **If you're in a blocked country** (US, Canada, etc.), your real passport won't work for KYC. Palau ID does.
+1. **If you're in a blocked country** (US, Canada, etc.), your real passport won't work for KYC on Blofin. Palau ID does.
 2. **One ID works everywhere** — KYC once, trade on almost every exchange.
 3. **It's a real government ID** — issued by a sovereign nation, not a fake document or loophole.
 4. **Your $5 can become $5,000. Then $50,000. Then $500,000.** When that happens, you'll want to withdraw more than $20K/day. This is your path.
@@ -858,77 +871,100 @@ cd ~/owl-swarm-trading-stack
 - `1B Blofin API.txt`
 - `1BananaOnTheWall Openrouter API Key.txt`
 
-> **Mac users: If you want the easiest path, use Path A (the AI agent way) below. The AI will handle all Mac vs Windows differences for you.**
+> **Mac users: If you want the easiest path, use the AI helper way (Path A) below. The AI will handle all Mac vs Windows differences for you.**
 
 ---
 
-## THE "STUPID EASY" WAY: USE A FREE AI AGENT
+## THE AI HELPER WAY: USE A FREE AI ASSISTANT
 
-If everything above feels overwhelming, **there is an easier way.** You can use a free AI assistant to do ALL the installation steps for you. You just copy and paste one prompt, and the AI handles everything.
+If everything above feels like a lot, **there is an easier way.** You can use a free AI chat assistant to guide you through every single step. You just copy and paste one prompt, and the AI tells you exactly what to do, what to click, and what to expect.
 
 ### What You Need
-- [Cursor](https://cursor.com) — a free AI code editor. It's like ChatGPT but it can also type on your computer and run commands for you.
-- About 15 minutes of watching the AI work
+- A free AI chat (any of these work great):
+  - [Kimi](https://kimi.com) — free, fast, helpful
+  - [ChatGPT](https://chat.openai.com) — free tier available
+  - [Claude](https://claude.ai) — free tier available
+- About 15–20 minutes of following along
 
-### Step A: Install Cursor
+### Step A: Open Your AI Chat
 
-1. Go to [cursor.com](https://cursor.com) in Chrome
-2. Click **Download for Free**
-3. Download the Windows installer (or Mac installer if you're on Mac)
-4. Double-click the downloaded file and follow the installation steps (click Next, accept defaults)
-5. Open Cursor from your desktop or Start menu
-6. Sign up with your email or Google account (free plan is all you need)
+1. Open Chrome
+2. Go to [kimi.com](https://kimi.com) or [chat.openai.com](https://chat.openai.com) or [claude.ai](https://claude.ai)
+3. Sign up for a free account (just email + password)
+4. You now have a free AI assistant that will help you through everything
 
-### Step B: Give the AI One Prompt
+### Step B: Give the AI Your Prompt
 
-1. Open Cursor
-2. You will see a chat box at the bottom or side of the screen
-3. Copy and paste this ENTIRE prompt into the chat box (it's long, but it's everything the AI needs):
+1. In the chat box, copy and paste this ENTIRE prompt (it's long, but it's everything the AI needs):
 
 ---
 
 ```
-I need you to set up the OWL Swarm Trading Bot for me. Please do ALL of the following steps. I am a beginner and need you to handle everything.
+I need help setting up the OWL Swarm Trading Bot on my computer. I am a complete beginner and need patient, step-by-step guidance. Please do not assume I know anything about programming, command lines, or crypto.
 
-MY INFO:
-- My computer is Windows (or Mac: change this line)
-- My username is: [TYPE YOUR WINDOWS USERNAME HERE]
-- My Blofin API credentials are in a file on my Desktop called "My Blofin Keys.txt"
-- My OpenRouter API key is in a file on my Desktop called "My OpenRouter Key.txt"
+MY COMPUTER:
+- Windows 10/11 (or Mac — tell me which one you have)
+- My Windows username is: [TYPE YOUR USERNAME HERE]
 
-STEPS TO DO:
+MY FILES:
+- I have a file on my Desktop called "My Blofin Keys.txt" with my Blofin API credentials
+- I have a file on my Desktop called "My OpenRouter Key.txt" with my OpenRouter API key
 
-1. Check if Git is installed. If not, tell me to download it from https://git-scm.com/download/win and wait for me to install it.
-2. Check if Python 3.12 is installed. If not, tell me to download it from https://python.org and wait for me to install it (make sure I check "Add to PATH").
-3. Check if Node.js is installed. If not, tell me to download it from https://nodejs.org and wait for me to install it.
-4. Open Command Prompt (or Terminal on Mac) and run: cd %USERPROFILE% (or cd ~ on Mac), then git clone https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
-5. Read the Blofin credentials from my Desktop file and create a new file at [OneDrive/Documents/1B Blofin API.txt] with the exact same content. Make sure the filename is EXACTLY "1B Blofin API.txt".
-6. Read the OpenRouter key from my Desktop file and create a new file at [OneDrive/Documents/1BananaOnTheWall Openrouter API Key.txt] with the exact same content. Make sure the filename is EXACTLY "1BananaOnTheWall Openrouter API Key.txt".
-7. Install Python dependencies: cd into the trading-engine folder and run "pip install -e ."
-8. Install Node.js dependencies: cd into the owl-swarm-trading-stack folder and run "npm install"
-9. Compile the dashboard: run "npx tsc --project tsconfig.json"
-10. Create desktop shortcuts for launch.ps1 and stop.ps1 (or launch.sh and stop.sh on Mac)
-11. Launch the bot and open the dashboard in Chrome
+WHAT I NEED YOU TO HELP ME DO:
 
-Please tell me what you're doing at each step. If anything fails, tell me exactly what went wrong and how to fix it. Be patient with me. I'm new to this.
+1. Check if Git, Python 3.12, and Node.js are installed on my computer. If any are missing, tell me exactly where to download them and what to click.
+
+2. Open Command Prompt (or Terminal on Mac) and run the git clone command to download the bot from https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
+
+3. Read my Blofin credentials from "My Blofin Keys.txt" on my Desktop and create a new file at:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1B Blofin API.txt
+   (or /Users/[MY USERNAME]/Documents/1B Blofin API.txt on Mac)
+   Make sure the filename is EXACTLY "1B Blofin API.txt" with correct capitalization and spaces.
+
+4. Read my OpenRouter key from "My OpenRouter Key.txt" on my Desktop and create a new file at:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1BananaOnTheWall Openrouter API Key.txt
+   (or /Users/[MY USERNAME]/Documents/1BananaOnTheWall Openrouter API Key.txt on Mac)
+   Make sure the filename is EXACTLY "1BananaOnTheWall Openrouter API Key.txt" with correct capitalization and spaces.
+
+5. Install the Python dependencies by running: cd into the trading-engine folder and run "pip install -e ."
+
+6. Install the Node.js dependencies by running: cd into the owl-swarm-trading-stack folder and run "npm install"
+
+7. Compile the dashboard by running: "npx tsc --project tsconfig.json"
+
+8. Create desktop shortcuts for the launch and stop scripts.
+
+9. Launch the bot and open the dashboard.
+
+Please explain each step in plain English before we do it. Tell me exactly what to type or click. If I get an error, help me fix it. I am completely new to this, so please be patient and thorough.
 ```
 
 ---
 
-4. Press **Enter** to send the prompt to the AI
-5. The AI will start working through each step
-6. It will ask you questions if it needs something
-7. It will tell you exactly what to click and type
-8. If something goes wrong, just type: "That didn't work. What should I do?" and the AI will fix it
+3. **Before sending:** Replace `[TYPE YOUR USERNAME HERE]` with your actual Windows username (the one you see when you log in to your computer). If you're on Mac, replace `[MY USERNAME]` with your Mac username.
+4. Press **Enter** or click the send button
+5. The AI will now guide you through every step, one at a time
 
-### Why This Way Is Better
+### How This Works
 
-- **No guesswork.** The AI sees your exact computer setup and handles all the differences.
-- **Real-time help.** If something breaks, the AI diagnoses it and fixes it on the spot.
-- **You learn by watching.** You see what the AI does, so you understand your setup better.
-- **It works on Mac too.** The AI knows the difference between Windows and Mac and adapts automatically.
+The AI will:
+- Tell you exactly what software to install and where to get it
+- Give you the exact commands to type
+- Help you troubleshoot if anything goes wrong
+- Explain what each step does in plain English
+- Wait for you to confirm before moving to the next step
 
-> **If the AI path fails at any point, you can switch to the manual steps above for just that one step, then go back to the AI.** There's no wrong way to do this. The only wrong way is giving up.
+**If you get stuck:** Just type "I don't understand" or "That didn't work" and the AI will explain it differently or help you fix it. There is no rush. The AI is patient.
+
+### Why This Way Works
+
+- **No guesswork.** The AI adapts to your exact situation.
+- **Real-time help.** If something breaks, you ask and get an answer immediately.
+- **You learn by doing.** You see what works, so you understand your setup better.
+- **Completely free.** Kimi, ChatGPT, and Claude all have free tiers that handle this perfectly.
+- **Works on both Windows and Mac.** The AI knows the difference and guides you accordingly.
+
+> **If the AI path hits a problem at any point, you can switch to the manual steps above for just that one step, then go back to the AI.** There's no wrong way to do this. The only wrong way is giving up. You can do this.
 
 ---
 
@@ -945,7 +981,7 @@ Please tell me what you're doing at each step. If anything fails, tell me exactl
 | **Check bot logs** | Open `C:\Users\YOU\owl-swarm-trading-stack\outputs\live-run.log` in Notepad |
 | **Change VPN server** | ProtonVPN → **Change Server** → wait 1:30 / 1:40 / 1:50 |
 | **Get Palau ID** | [rns.id](https://rns.id) → $248/year → unlocks $1M/day withdrawals |
-| **Use AI to install everything** | Install [Cursor](https://cursor.com) → paste the prompt from "The Stupid Easy Way" section |
+| **Get AI help with setup** | Go to [kimi.com](https://kimi.com) or [chat.openai.com](https://chat.openai.com) → paste the prompt from the AI Helper Way section |
 
 ---
 
@@ -964,13 +1000,13 @@ Please tell me what you're doing at each step. If anything fails, tell me exactl
 
 ## END OF TUTORIAL
 
-**You made it. You're here. That alone puts you ahead of 99% of people who never start.**
+**You made it. You're here. That alone puts you ahead of everyone who never started.**
 
-Whether you have $3 or $300, whether you know everything about computers or nothing at all — the bot is running now. Your money is working. Let it compound. Let it grow. Check on it. Be patient. Trust the process.
+Whether you have $3 or $300, whether you know everything about computers or are just figuring it out — the bot can work for you. Your money can grow. Let it compound. Check on it. Be patient. Trust the process.
 
-**Your $5 can become $50. Your $50 can become $500. Your $500 can become $5,000.** We've seen it. The math works. The risk gate protects you. The stop-losses cut the losers. The winners run. That's how compounding works. That's how this works.
+**Your $5 can become $50. Your $50 can become $500. Your $500 can become $5,000.** The math works. The risk gate protects you. The stop-losses cut the losers. The winners run. That's how compounding works. That's how this works.
 
-**Now go prove it.** 🦉
+**You can do this. Now go prove it.** 🦉
 
 **File saved to:** `C:\Users\mknig\OneDrive\Documents\Kimi\Workspaces\Owl Swarm\OWL_SWARM_SETUP_TUTORIAL.md`
 
