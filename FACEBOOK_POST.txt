@@ -1,0 +1,248 @@
+🦉 OWL SWARM TRADING BOT — FREE. Runs on your computer. Trades crypto 24/7 while you sleep.
+
+Start with $3. $5. $50. Whatever you're comfortable with. No monthly fees. No subscriptions. The bot is FREE to run.
+
+If you've never traded crypto in your life, this is for you. You don't need to know code. You don't need to know trading. You just need to follow steps and copy-paste one prompt into a free AI chat. The AI does the hard part for you.
+
+Here's everything you need to do:
+
+━━━━━━━━━━━━━━
+
+📌 WHAT YOU NEED
+• Any computer that can stay on (Windows or Mac)
+• Chrome browser
+• About 30 minutes
+• Whatever amount of money you can afford to lose ($3 works!)
+
+━━━━━━━━━━━━━━
+
+STEP 1: GET A FREE VPN
+Go to protonvpn.com, sign up free, download, install. Open the app and click Quick Connect. Look at the TOP of the app — it must say Netherlands or Japan. If it says United States, click Change Server, wait 1 minute 30 seconds, check again. Repeat up to 3 times.
+
+Leave it connected 24/7. This hides your real location so Blofin doesn't block you.
+
+━━━━━━━━━━━━━━
+
+STEP 2: CREATE YOUR BLOFIN ACCOUNT
+(Make sure ProtonVPN shows Netherlands or Japan FIRST)
+
+Go to blofin.com → Sign Up → email + password → verify email.
+
+If asked for country, say Netherlands or Japan (whatever your VPN shows).
+
+You do NOT need to upload an ID. You can trade and withdraw up to $20,000 per day immediately.
+
+━━━━━━━━━━━━━━
+
+STEP 3: SET UP 2FA (GOOGLE AUTHENTICATOR)
+
+Get the app:
+• iPhone: App Store → search "Google Authenticator" → install
+• Android: Google Play Store → search "Google Authenticator" → install
+
+On Blofin: profile icon → Security → Google Authenticator → Bind → scan the QR code with your phone → enter the 6-digit code.
+
+WRITE DOWN THE BACKUP CODE they give you. Save it somewhere safe.
+
+━━━━━━━━━━━━━━
+
+STEP 4: CREATE API KEYS
+
+Blofin → profile icon → API Management → Create API Key
+
+Name it: OWL-Swarm-Trading
+
+Check these boxes:
+✅ Read
+✅ Trade
+❌ Withdraw (leave this OFF)
+
+Click Create → enter your 2FA code.
+
+COPY ALL 3 VALUES IMMEDIATELY (Blofin only shows them once):
+• API Key
+• Secret Key
+• Passphrase
+
+Open Notepad. Type this:
+
+API Key: [paste here]
+Secret Key: [paste here]
+Passphrase: [paste here]
+
+Save As → Desktop → "My Blofin Keys.txt"
+
+━━━━━━━━━━━━━━
+
+STEP 5: GET YOUR FREE AI BRAIN KEY
+
+Go to openrouter.ai → Sign Up → profile icon → Keys → Create Key → name it OWL-Swarm → copy the key (starts with sk-or-)
+
+Profile icon → Settings → turn ON "Enable free models"
+
+Open Notepad. Type:
+
+OpenRouter API Key: [paste here]
+
+Save As → Desktop → "My OpenRouter Key.txt"
+
+━━━━━━━━━━━━━━
+
+STEP 6: BUY USDT
+
+Go to coinbase.com → Sign Up → verify email → Buy & Sell → select USDT → enter amount ($5 is a nice start, $3 works too) → Buy Now with debit card.
+
+━━━━━━━━━━━━━━
+
+STEP 7: SEND USDT TO BLOFIN
+
+Blofin → Assets → Deposit → USDT → TRC20 network → Copy the deposit address
+
+Coinbase → Send/Receive → USDT → paste Blofin address → TRC20 network → enter amount → Send Now
+
+Wait 5-10 minutes. Costs about $1 fee no matter how much you send.
+
+━━━━━━━━━━━━━━
+
+STEP 8: MOVE USDT TO FUTURES WALLET ⭐ CRITICAL
+
+Blofin has TWO wallets:
+• Spot Wallet — where your deposit lands
+• Futures Wallet — where the bot trades
+
+The bot trades FUTURES. Your money MUST be in the Futures Wallet.
+
+Blofin → Assets → find your USDT in Spot → click Transfer (or Spot → Futures) → select USDT → enter amount → Confirm
+
+If you skip this, the bot sees $0 and won't trade. Don't skip this.
+
+━━━━━━━━━━━━━━
+
+STEP 9: LET AI INSTALL EVERYTHING FOR YOU
+
+This is the easy part. You open a free AI chat, paste ONE prompt, and the AI walks you through every click and command.
+
+Go to kimi.com (recommended — free, fast) OR chat.openai.com OR claude.ai
+
+Sign up free. No credit card needed.
+
+Copy and paste this ENTIRE prompt into the chat:
+
+---
+
+I need help setting up the OWL Swarm Trading Bot on my computer. I am a complete beginner and need patient, step-by-step guidance. Please do not assume I know anything about programming, command lines, or crypto.
+
+MY COMPUTER:
+- Windows 10/11 (or Mac — tell me which one you have)
+- My username is: [TYPE YOUR USERNAME HERE]
+
+MY FILES ON MY DESKTOP:
+- "My Blofin Keys.txt" — contains my Blofin API Key, Secret Key, and Passphrase
+- "My OpenRouter Key.txt" — contains my OpenRouter API key (starts with sk-or-)
+
+WHAT I NEED YOU TO HELP ME DO:
+
+1. Check if Git, Python 3.12, and Node.js are installed on my computer. If any are missing, tell me exactly where to download them and what to click. Wait for me to install each one before moving on.
+
+2. Open Command Prompt (or Terminal on Mac) for me. Run: cd %USERPROFILE% (or cd ~ on Mac), then run: git clone https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
+
+3. Read "My Blofin Keys.txt" from my Desktop. Create a new file at the EXACT location:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1B Blofin API.txt
+   (or /Users/[MY USERNAME]/Documents/1B Blofin API.txt on Mac)
+   The filename must be EXACTLY "1B Blofin API.txt" with correct capitalization and spaces.
+
+4. Read "My OpenRouter Key.txt" from my Desktop. Create a new file at the EXACT location:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1BananaOnTheWall Openrouter API Key.txt
+   (or /Users/[MY USERNAME]/Documents/1BananaOnTheWall Openrouter API Key.txt on Mac)
+   The filename must be EXACTLY "1BananaOnTheWall Openrouter API Key.txt" with correct capitalization and spaces.
+
+5. Install Python dependencies: cd into the trading-engine folder inside owl-swarm-trading-stack, then run "pip install -e ."
+
+6. Install Node.js dependencies: cd into the owl-swarm-trading-stack folder, then run "npm install"
+
+7. Compile the dashboard by running: "npx tsc --project tsconfig.json"
+
+8. Create desktop shortcuts (Windows) or launcher scripts (Mac) for the bot's launch and stop files.
+
+9. Launch the bot and open the dashboard in Chrome.
+
+Please explain each step in plain English BEFORE we do it. Tell me exactly what to type or click. If I get an error, help me fix it. I am completely new to this, so please be patient and thorough. Go one step at a time and wait for me to confirm before moving to the next step.
+
+---
+
+BEFORE YOU SEND: Replace [TYPE YOUR USERNAME HERE] with your actual computer username.
+
+Then just follow the AI. It will tell you exactly what to do, one step at a time. If something breaks, tell it "that didn't work" and it will fix it.
+
+━━━━━━━━━━━━━━
+
+STEP 10: LAUNCH YOUR BOT
+
+After the AI finishes, you'll have two icons on your desktop:
+🟢 OWL Swarm Launcher (start)
+🔴 Stop OWL Swarm (stop)
+
+1. Make sure ProtonVPN is on Netherlands or Japan
+2. Make sure your USDT is in your Futures Wallet
+3. Double-click OWL Swarm Launcher
+4. Wait 60 seconds — Chrome opens with your dashboard
+
+━━━━━━━━━━━━━━
+
+📊 DAILY CHECK-IN (10 SECONDS)
+
+You do NOT restart the bot every day. It stays running as long as your computer stays on.
+
+Just glance at the dashboard in Chrome. Look at the TOP LEFT. If "Updated: [time]" is counting up by the second, the bot is alive and working. That's it. You're done.
+
+Keep your computer awake: Windows key → type "power" → Power & sleep settings → Sleep = Never. Don't close the PowerShell window — just minimize it.
+
+━━━━━━━━━━━━━━
+
+💰 ADD MORE MONEY LATER
+
+Stop bot → buy more USDT on Coinbase → send to same Blofin address → transfer Spot → Futures → restart bot. The bot automatically uses the bigger balance.
+
+━━━━━━━━━━━━━━
+
+🔧 QUICK FIXES
+
+Bot shows $0? → You forgot to move USDT from Spot to Futures Wallet. Go do Step 8.
+
+"git/python/npm not recognized"? → Restart your computer after installing.
+
+Dashboard blank? → Stop bot, wait 10 seconds, restart bot.
+
+No trades yet? → Normal. The bot scans ~500 coins and only trades when a setup is good. Be patient. Your money is safe.
+
+Blofin says "region restricted"? → Your VPN is on US. Change to Netherlands/Japan.
+
+━━━━━━━━━━━━━━
+
+📎 LINKS
+
+ProtonVPN: https://protonvpn.com
+Blofin: https://blofin.com
+OpenRouter: https://openrouter.ai
+Coinbase: https://coinbase.com
+Kimi (free AI): https://kimi.com
+ChatGPT (free AI): https://chat.openai.com
+Claude (free AI): https://claude.ai
+Bot code: https://github.com/mknight2690-sys/owl-swarm-trading-stack
+Full tutorial: https://github.com/mknight2690-sys/owl-swarm-trading-stack/blob/master/OWL_SWARM_SETUP_TUTORIAL.md
+
+━━━━━━━━━━━━━━
+
+✅ REMEMBER
+• Only trade what you can afford to lose
+• Blofin API key: Read + Trade only. Never Withdraw.
+• ProtonVPN stays on 24/7
+• Write down your 2FA backup code
+
+━━━━━━━━━━━━━━
+
+Your $3 can become $30. Your $5 can become $50. Your $50 can become $500. The math works. The bot protects your money first, profits second. Let it compound.
+
+You can do this. Now go prove it. 🦉
+
+#crypto #tradingbot #passiveincome #bitcoin #altcoins #trading #freetradingbot #owlsarm
