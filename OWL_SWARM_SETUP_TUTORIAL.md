@@ -1,60 +1,40 @@
-# OWL SWARM TRADING STACK — Complete A-to-Z Setup Tutorial
+# OWL SWARM TRADING STACK — Complete Setup Tutorial
 
-**Version:** 1.6 (Free-Forever AI Agent + Welcoming Edition) | **Updated:** 2026-07-03  
+**Version:** 1.7 (AI-First Edition) | **Updated:** 2026-07-03  
 **Who this is for:** Everyone. Never traded crypto? Start here. Have $3? Start here. Have $300? Start here. Never used a command line? Start here. We will walk you through every single step. No judgment. No assumptions. Just help.
 
 > **Welcome.** You are about to set up a robot that trades crypto for you while you sleep. It costs $0 to run. You can start with $3, $5, $50, or whatever you feel comfortable with. There is no minimum. The bot works with any amount. Your $3 can grow. Your $5 can grow. Let it compound. This is real.
 
 ---
 
-## TABLE OF CONTENTS
+## HOW THIS WORKS
 
-1. [The Two Ways to Set This Up](#the-two-ways-to-set-this-up)
-2. [Phase 0: What You Need](#phase-0-what-you-need)
-3. [Phase 1: Buy Some Crypto (USDT)](#phase-1-buy-some-crypto-usdt)
-4. [Phase 2: Get a VPN (ProtonVPN — Free)](#phase-2-get-a-vpn-protonvpn--free)
-5. [Phase 3: Create Your Blofin Account](#phase-3-create-your-blofin-account)
-6. [Phase 4: Set Up 2FA (Google Authenticator)](#phase-4-set-up-2fa-google-authenticator)
-7. [Phase 5: Get Your OpenRouter API Key (Free AI Brain)](#phase-5-get-your-openrouter-api-key-free-ai-brain)
-8. [Phase 6: Install the Software](#phase-6-install-the-software)
-9. [Phase 7: Download the Bot Code](#phase-7-download-the-bot-code)
-10. [Phase 8: Create Your Credential Files](#phase-8-create-your-credential-files)
-11. [Phase 9: Make Desktop Icons](#phase-9-make-desktop-icons)
-12. [Phase 10: Launch Your Bot](#phase-10-launch-your-bot)
-13. [Phase 11: Daily Use](#phase-11-daily-use)
-14. [Phase 12: When Your Money Grows (Optional Palau ID)](#phase-12-when-your-money-grows-optional-palau-id)
-15. [Troubleshooting](#troubleshooting)
-16. [Mac Users — Read This](#mac-users--read-this)
+**You will use a free AI assistant to guide you through everything.** You open a free AI chat, copy and paste one prompt, and the AI tells you exactly what to click, what to type, and what to expect at each step. It's like having a patient friend sitting next to you who knows exactly what to do.
+
+**Why this way?** You don't need to understand git, npm, pip, or any technical stuff. The AI explains each step in plain English. If you get stuck, you ask "what went wrong?" and it helps you fix it. This is the easiest way to get your bot running.
+
+**What you need:**
+- A free AI chat — we recommend [Kimi](https://kimi.com), but [ChatGPT](https://chat.openai.com) or [Claude](https://claude.ai) work too
+- The single prompt we give you below
+- About 20–30 minutes of following along
 
 ---
 
-## THE TWO WAYS TO SET THIS UP
+## TABLE OF CONTENTS
 
-We have **two paths** for you. Pick the one that fits you.
-
-### Path A: The AI Helper Way (RECOMMENDED for beginners)
-
-**You use a free AI assistant to guide you through every step.** You copy and paste one prompt into a free AI chat, and it tells you exactly what to click, what to type, and what to expect at each step. It's like having a patient friend sitting next to you who knows exactly what to do.
-
-**What you need:**
-- A free AI chat (Kimi, ChatGPT, or Claude — all have free tiers)
-- The single prompt we give you below
-- About 15–20 minutes of following along
-
-**Why this way?** You don't need to understand git, npm, pip, or any of that technical stuff. The AI explains each step in plain English. If you get stuck, you ask "what went wrong?" and it helps you fix it. This is the path most people should take.
-
-### Path B: The Step-by-Step Way (for people who want to see every detail)
-
-**You do each step yourself while reading our guide.** We tell you exactly where to click, what to type, and what to expect. Every step is explained in plain English. No technical knowledge assumed.
-
-**What you need:**
-- Command Prompt (we show you where to find it)
-- The ability to copy and paste
-- About 45–60 minutes
-
-**Why this way?** You learn how everything works. If something breaks later, you know how to fix it. But honestly, Path A is easier and works just as well.
-
-> **Our recommendation:** Start with **Path A**. The AI will hold your hand through everything. If the AI hits a problem that stumps it, switch to Path B for just that one step. There is no wrong way. The goal is getting your bot running so your money can grow.
+1. [Phase 0: What You Need](#phase-0-what-you-need)
+2. [Phase 1: Buy Some Crypto (USDT)](#phase-1-buy-some-crypto-usdt)
+3. [Phase 2: Get a VPN (ProtonVPN — Free)](#phase-2-get-a-vpn-protonvpn--free)
+4. [Phase 3: Create Your Blofin Account](#phase-3-create-your-blofin-account)
+5. [Phase 4: Set Up 2FA (Google Authenticator)](#phase-4-set-up-2fa-google-authenticator)
+6. [Phase 5: Get Your OpenRouter API Key (Free AI Brain)](#phase-5-get-your-openrouter-api-key-free-ai-brain)
+7. [Phase 6: Move USDT to Your Futures Wallet](#phase-6-move-usdt-to-your-futures-wallet)
+8. [Phase 7: Use the AI Assistant to Install Everything](#phase-7-use-the-ai-assistant-to-install-everything)
+9. [Phase 8: Launch Your Bot](#phase-8-launch-your-bot)
+10. [Phase 9: Daily Check-In](#phase-9-daily-check-in)
+11. [Phase 10: When Your Money Grows (Optional Palau ID)](#phase-10-when-your-money-grows-optional-palau-id)
+12. [Troubleshooting](#troubleshooting)
+13. [Mac Users — Read This](#mac-users--read-this)
 
 ---
 
@@ -76,14 +56,14 @@ We have **two paths** for you. Pick the one that fits you.
 - **The bot is free to run.** No monthly fees. No subscriptions. The only cost is your starting capital and a one-time $1 network fee when you move money to Blofin.
 
 ### Time
-- **First time setup:** 20 minutes (Path A) or 60 minutes (Path B)
-- **Every day after:** 30 seconds (double-click your icon, done)
+- **First time setup:** About 30 minutes
+- **Every day after:** 10 seconds (glance at the dashboard to confirm it's running)
 
 ### Accounts to Create (All Free)
 1. **ProtonVPN** — keeps your internet private (free version works perfectly)
 2. **Blofin** — where the bot trades (free to sign up, no ID needed to start)
 3. **OpenRouter** — the AI brain that decides which trades to take (free version works)
-4. **GitHub** — where the bot code lives (free, only needed for Path B)
+4. **Kimi** (or ChatGPT / Claude) — your free AI assistant that walks you through installation
 
 ---
 
@@ -216,7 +196,7 @@ If ProtonVPN connected you to the **United States**, you need to change it. Here
 
 Blofin is the exchange where your bot trades. It's where your money lives while the bot works.
 
-> **You do NOT need to upload an ID or verify your identity to start.** Blofin lets you trade and withdraw up to **$20,000 per day** with no KYC (no identity verification). You can start trading TODAY with just an email and password. If you ever need to withdraw more than $20,000 in a single day, there's an optional upgrade in Phase 12.
+> **You do NOT need to upload an ID or verify your identity to start.** Blofin lets you trade and withdraw up to **$20,000 per day** with no KYC (no identity verification). You can start trading TODAY with just an email and password. If you ever need to withdraw more than $20,000 in a single day, there's an optional upgrade in Phase 10.
 
 ### Step 3.1: Sign Up
 
@@ -233,7 +213,7 @@ Blofin is the exchange where your bot trades. It's where your money lives while 
 
 > **If Blofin asks for your country during signup:** Say **Netherlands** or **Japan** (whichever your VPN shows). Do NOT say your real country if you're in the US, Canada, or a blocked region.
 
-> **About the $20,000/day limit:** This is per day. If you make $500/day in profits, you can withdraw all of it. If you make $20,000 in one day, you can withdraw all of it. The limit resets every 24 hours. For most people starting with $5, this limit is plenty. If you grow your account and need more than $20K/day, see Phase 12.
+> **About the $20,000/day limit:** This is per day. If you make $500/day in profits, you can withdraw all of it. If you make $20,000 in one day, you can withdraw all of it. The limit resets every 24 hours. For most people starting with $5, this limit is plenty. If you grow your account and need more than $20K/day, see Phase 10.
 
 ### Step 3.2: Set Up 2FA (Two-Factor Authentication)
 
@@ -291,11 +271,11 @@ API keys are like special passwords that let the bot trade on your behalf. The b
    - **API Key** — a long string of letters and numbers
    - **Secret Key** — a long string of letters and numbers
    - **Passphrase** — a shorter string you created when setting up the key
-8. **IMPORTANT:** Open Notepad on your computer and paste all three into a file. Save it somewhere you'll remember (like your Desktop). You'll need this in Phase 8.
+8. **IMPORTANT:** Open Notepad on your computer and paste all three into a file. Save it somewhere you'll remember (like your Desktop). You'll need this soon.
 
 > **If you lose these keys, you have to create new ones.** Blofin never shows the Secret Key again for security reasons. So save them now.
 
-### Step 3.4: Save Your Keys (For Later)
+### Step 3.4: Save Your Keys to Your Desktop
 
 Open **Notepad** on your computer:
 
@@ -315,7 +295,7 @@ Passphrase: YOUR_BLOFIN_PASSPHRASE_HERE
 7. Save it to your **Desktop** with the name: `My Blofin Keys.txt`
 8. Close Notepad
 
-> **We'll come back to this file in Phase 8.** Just keep it on your Desktop for now.
+> **Keep this file on your Desktop.** The AI assistant will read it and create the correct file for the bot automatically.
 
 ---
 
@@ -383,227 +363,120 @@ OpenRouter API Key: sk-or-YOUR_KEY_HERE
 3. The bot uses `openai/gpt-oss-120b:free` which is completely free but has rate limits
 4. If the AI hits a rate limit, the bot will wait and retry automatically. This is normal. It still works.
 
----
-
-## PHASE 6: INSTALL THE SOFTWARE
-
-Your computer needs three pieces of free software to run the bot. We'll install them one by one. Each one is safe, official, and free.
-
-### Step 6.1: Install Git
-
-Git is a tool that downloads code from the internet. Think of it like a specialized downloader.
-
-1. Go to [git-scm.com/download/win](https://git-scm.com/download/win) in Chrome
-2. Click the big button that says **"64-bit Git for Windows Setup"**
-3. A file downloads. Double-click it to run it.
-4. A setup wizard appears. Click **Next** about 10 times. Don't change any settings. Just keep clicking Next until you see **Finish**.
-5. Click **Finish**
-6. Done!
-
-**How to check if it worked:**
-1. Press **Windows key**, type **"cmd"**, press **Enter**
-2. A black window opens. This is **Command Prompt**. Don't worry — it's just a place where you type commands.
-3. Type exactly this (then press Enter):
-   ```
-   git --version
-   ```
-4. You should see something like: `git version 2.45.0`
-5. If you see an error saying "git is not recognized," restart your computer and try again. Sometimes Windows needs a restart to notice new software.
-
-> **What is Command Prompt?** It's a black box where you type text commands instead of clicking buttons. Every step below tells you EXACTLY what to type, so you can copy and paste. Nothing will break if you type the wrong thing — you can just close the window and start over.
-
-### Step 6.2: Install Python 3.12
-
-Python is the programming language the bot is written in. You need it on your computer to run the bot.
-
-1. Go to [python.org/downloads/release/python-3120/](https://www.python.org/downloads/release/python-3120/) in Chrome
-2. Scroll down until you see **Files**
-3. Look for the line that says **"Windows installer (64-bit)"** and click the link to download it
-4. A file downloads. Double-click it to run it.
-5. **CRITICAL STEP:** On the very first screen of the installer, there is a small checkbox at the bottom that says **"Add Python to PATH"**. Click this checkbox to turn it ON. This is extremely important. If you skip this, Python won't work properly.
-6. Click **Install Now**
-7. Wait for the green bar to fill up. This takes 2–3 minutes.
-8. Click **Close**
-
-**How to check if it worked:**
-1. Open Command Prompt again (Windows key, type "cmd", press Enter)
-2. Type exactly this:
-   ```
-   python --version
-   ```
-3. You should see: `Python 3.12.x` (the x can be any number)
-4. If you get an error, you probably forgot to check the "Add to PATH" box. Uninstall Python (go to Settings → Apps, find Python, click Uninstall), then reinstall it and MAKE SURE that checkbox is checked.
-
-### Step 6.3: Install Node.js
-
-Node.js is what runs the dashboard (the pretty web page that shows your bot's progress).
-
-1. Go to [nodejs.org](https://nodejs.org) in Chrome
-2. You will see a big green button that says **"LTS"** and "Recommended For Most Users"
-3. Click that button to download the installer
-4. A file downloads. Double-click it to run it.
-5. Click **Next** through all the screens. Don't change anything. Keep clicking Next until you see **Finish**.
-6. Click **Finish**
-
-**How to check if it worked:**
-1. Open Command Prompt
-2. Type exactly this:
-   ```
-   node --version
-   ```
-3. You should see something like: `v20.10.0` (the numbers can be different, anything starting with v20 is fine)
-4. If you get an error, restart your computer and try again.
+> **Keep this file on your Desktop too.** The AI assistant will read it and create the correct file for the bot automatically.
 
 ---
 
-## PHASE 7: DOWNLOAD THE BOT CODE
+## PHASE 6: MOVE USDT TO YOUR FUTURES WALLET
 
-Now we download the actual bot. This is the code that makes everything work.
+This is a **critical step** that many people miss. Blofin has two wallets:
+- **Spot Wallet** — where your USDT lands when you deposit it
+- **Futures Wallet** — where the bot trades
 
-### Step 7.1: Open Command Prompt
+The bot trades futures contracts, so your USDT needs to be in the **Futures Wallet**, not the Spot Wallet.
 
-You need to open Command Prompt to download the code. Here's how:
+### Step 6.1: Transfer from Spot to Futures
 
+1. Log in to [blofin.com](https://blofin.com) in Chrome (make sure ProtonVPN is still connected to Netherlands or Japan)
+2. Click **Assets** at the top of the page
+3. Look for your **USDT** balance. It should show your deposited amount in the Spot section.
+4. Click **Transfer** or look for a button that says **"Spot → Futures"**
+5. Select **USDT**
+6. Enter the amount you want to transfer (all of it, or leave a tiny bit in Spot if you want)
+7. Click **Confirm** or **Transfer**
+8. Done! Your USDT is now in the Futures Wallet where the bot can trade with it.
+
+> **If you skip this step, the bot will see $0 available and won't trade.** Make sure your money is in the Futures Wallet.
+
+---
+
+## PHASE 7: USE THE AI ASSISTANT TO INSTALL EVERYTHING
+
+This is where the magic happens. You have your Blofin keys saved on your Desktop. You have your OpenRouter key saved on your Desktop. Now you open a free AI chat and let it handle ALL the installation, file creation, and setup for you.
+
+### Step 7.1: Open Your Free AI Chat
+
+We recommend **Kimi** because it's fast, free, and handles technical tasks well. But ChatGPT and Claude work too.
+
+1. Open Chrome
+2. Go to [kimi.com](https://kimi.com) (or [chat.openai.com](https://chat.openai.com) or [claude.ai](https://claude.ai))
+3. Sign up for a free account (just email + password — no credit card needed)
+4. You now have a free AI assistant that will help you through everything
+
+### Step 7.2: Copy and Paste the Prompt
+
+In the chat box, copy and paste this ENTIRE prompt (it's long, but it's everything the AI needs):
+
+---
+
+```
+I need help setting up the OWL Swarm Trading Bot on my computer. I am a complete beginner and need patient, step-by-step guidance. Please do not assume I know anything about programming, command lines, or crypto.
+
+MY COMPUTER:
+- Windows 10/11 (or Mac — tell me which one you have)
+- My username is: [TYPE YOUR USERNAME HERE]
+
+MY FILES ON MY DESKTOP:
+- "My Blofin Keys.txt" — contains my Blofin API Key, Secret Key, and Passphrase
+- "My OpenRouter Key.txt" — contains my OpenRouter API key (starts with sk-or-)
+
+WHAT I NEED YOU TO HELP ME DO:
+
+1. Check if Git, Python 3.12, and Node.js are installed on my computer. If any are missing, tell me exactly where to download them and what to click. Wait for me to install each one before moving on.
+
+2. Open Command Prompt (or Terminal on Mac) for me. Run: cd %USERPROFILE% (or cd ~ on Mac), then run: git clone https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
+
+3. Read "My Blofin Keys.txt" from my Desktop. Create a new file at the EXACT location:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1B Blofin API.txt
+   (or /Users/[MY USERNAME]/Documents/1B Blofin API.txt on Mac)
+   The filename must be EXACTLY "1B Blofin API.txt" with correct capitalization and spaces.
+
+4. Read "My OpenRouter Key.txt" from my Desktop. Create a new file at the EXACT location:
+   C:\Users\[MY USERNAME]\OneDrive\Documents\1BananaOnTheWall Openrouter API Key.txt
+   (or /Users/[MY USERNAME]/Documents/1BananaOnTheWall Openrouter API Key.txt on Mac)
+   The filename must be EXACTLY "1BananaOnTheWall Openrouter API Key.txt" with correct capitalization and spaces.
+
+5. Install Python dependencies: cd into the trading-engine folder inside owl-swarm-trading-stack, then run "pip install -e ."
+
+6. Install Node.js dependencies: cd into the owl-swarm-trading-stack folder, then run "npm install"
+
+7. Compile the dashboard by running: "npx tsc --project tsconfig.json"
+
+8. Create desktop shortcuts (Windows) or launcher scripts (Mac) for the bot's launch and stop files.
+
+9. Launch the bot and open the dashboard in Chrome.
+
+Please explain each step in plain English BEFORE we do it. Tell me exactly what to type or click. If I get an error, help me fix it. I am completely new to this, so please be patient and thorough. Go one step at a time and wait for me to confirm before moving to the next step.
+```
+
+---
+
+3. **Before sending:** Replace `[TYPE YOUR USERNAME HERE]` with your actual Windows username (the one you see when you log in to your computer). If you're on Mac, replace `[MY USERNAME]` with your Mac username.
+4. Press **Enter** or click the send button
+5. The AI will now guide you through every step, one at a time
+
+### Step 7.3: Follow the AI's Instructions
+
+The AI will:
+- Tell you exactly what software to install and where to get it
+- Give you the exact commands to type
+- Help you troubleshoot if anything goes wrong
+- Explain what each step does in plain English
+- Wait for you to confirm before moving to the next step
+
+**How to open Command Prompt** (the AI will ask you to do this):
 1. Press the **Windows key** on your keyboard
 2. Type **"cmd"** (without quotes)
-3. Press **Enter** on your keyboard
-4. A black window opens with white text. This is Command Prompt.
+3. Press **Enter**
+4. A black window opens. This is Command Prompt. Don't worry — it's just a place where you type commands.
 
-> **What you're looking at:** The black window shows your current location on your computer, like `C:\Users\YourName>`. You can type commands here and the computer will do them. Think of it like texting instructions to your computer.
+> **What is Command Prompt?** It's a black box where you type text commands instead of clicking buttons. The AI tells you EXACTLY what to type, so you can copy and paste. Nothing will break if you type the wrong thing — you can just close the window and start over.
 
-### Step 7.2: Download the Code
-
-In the Command Prompt window, type this EXACTLY (you can copy and paste it from here), then press **Enter**:
-
-```cmd
-cd %USERPROFILE%
-git clone https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
-```
-
-**What this does:**
-- `cd %USERPROFILE%` — moves to your home folder (where your user files live)
-- `git clone ...` — downloads the entire bot from the internet
-
-**What to expect:** You will see a bunch of text scrolling. Words like "Cloning into...", "Receiving objects...", "Resolving deltas..." will appear. This is normal. It's just downloading files. When it's done, you'll see your prompt again (the `C:\...>` thing). This takes about 30 seconds to 2 minutes depending on your internet speed.
-
-**How to check if it worked:**
-In the same Command Prompt window, type:
-```cmd
-dir owl-swarm-trading-stack
-```
-
-You should see a list of folders and files. If you see things like `src`, `trading-engine`, `scripts`, etc., then it worked perfectly.
+**If you get stuck:** Just type "I don't understand" or "That didn't work" and the AI will explain it differently or help you fix it. There is no rush. The AI is patient. You can do this.
 
 ---
 
-## PHASE 8: CREATE YOUR CREDENTIAL FILES
-
-The bot needs two files to read your API keys. One for Blofin, one for OpenRouter. Remember the files you saved to your Desktop in Phases 3.4 and 5.2? We're going to copy them to the right place.
-
-### Step 8.1: Create the Blofin Credentials File
-
-You already saved your Blofin keys to `My Blofin Keys.txt` on your Desktop in Phase 3.4. Now we just need to copy that file to the exact location the bot expects.
-
-1. Open **File Explorer** (press Windows key + E, or click the folder icon on your taskbar)
-2. Navigate to your **Desktop** (click "Desktop" in the left sidebar)
-3. Find the file you saved: `My Blofin Keys.txt`
-4. Double-click it to open it in Notepad
-5. Select all the text (Ctrl + A)
-6. Copy it (Ctrl + C)
-7. Close Notepad
-8. Open a new Notepad window (Windows key, type "notepad", press Enter)
-9. Paste the text (Ctrl + V)
-10. Click **File → Save As**
-11. Navigate to: `C:\Users\YOUR_USERNAME\OneDrive\Documents`
-    - To get there: In the Save As dialog, click on your username in the left sidebar, then double-click "OneDrive", then double-click "Documents"
-12. In the **File name** box, type exactly: `1B Blofin API.txt`
-13. Make sure **Save as type** is set to `All Files (*.*)` (NOT "Text Documents")
-14. Click **Save**
-15. Close Notepad
-
-> **Why this file name?** The bot was programmed to look for a file called exactly `1B Blofin API.txt` in your Documents folder. The name must be exact. Capital letters, spaces, and all.
-
-### Step 8.2: Create the OpenRouter Credentials File
-
-Same process, but for your OpenRouter key.
-
-1. Open File Explorer
-2. Go to your **Desktop**
-3. Find `My OpenRouter Key.txt`
-4. Double-click it to open
-5. Select all (Ctrl + A), Copy (Ctrl + C)
-6. Close Notepad
-7. Open a new Notepad window
-8. Paste (Ctrl + V)
-9. Click **File → Save As**
-10. Navigate to: `C:\Users\YOUR_USERNAME\OneDrive\Documents`
-11. In the **File name** box, type exactly: `1BananaOnTheWall Openrouter API Key.txt`
-12. Make sure **Save as type** is `All Files (*.*)`
-13. Click **Save**
-14. Close Notepad
-
-### Step 8.3: Verify the Files Exist
-
-Let's make sure both files are in the right place:
-
-1. Open File Explorer (Windows key + E)
-2. Go to `OneDrive → Documents`
-3. You should see:
-   - `1B Blofin API.txt`
-   - `1BananaOnTheWall Openrouter API Key.txt`
-4. If you see both, you're perfect. If not, repeat the steps above.
-
----
-
-## PHASE 9: MAKE DESKTOP ICONS
-
-You want to double-click an icon on your desktop to start and stop the bot. Let's make those icons now.
-
-### Step 9.1: Make the "Start" Icon
-
-1. Right-click on an empty area of your **Desktop** (not on any existing icons)
-2. Hover over **New** and click **Shortcut**
-3. A window appears asking for the location. Type or paste this EXACTLY:
-
-```
-C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File "C:\Users\%USERNAME%\owl-swarm-trading-stack\launch.ps1"
-```
-
-4. Click **Next**
-5. Type the name: `OWL Swarm Launcher`
-6. Click **Finish**
-7. You now have a new icon on your desktop!
-8. (Optional) Right-click it → **Properties** → **Change Icon** → pick a green arrow if you want it to look fancy
-
-### Step 9.2: Make the "Stop" Icon
-
-1. Right-click on an empty area of your Desktop
-2. Hover over **New** and click **Shortcut**
-3. Type or paste this EXACTLY:
-
-```
-C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File "C:\Users\%USERNAME%\owl-swarm-trading-stack\stop.ps1"
-```
-
-4. Click **Next**
-5. Type the name: `Stop OWL Swarm`
-6. Click **Finish**
-7. (Optional) Right-click it → **Properties** → **Change Icon** → pick a red X
-
-### Step 9.3: Test the Icons
-
-1. Double-click **OWL Swarm Launcher**
-2. A blue PowerShell window should open with text that says "OWL Swarm Desktop Launcher"
-3. Wait 30–60 seconds
-4. Chrome should open automatically and show your dashboard at `http://127.0.0.1:7878`
-5. You should see your account balance and a live updating log
-6. If it works, click **Stop OWL Swarm** to shut it down for now
-
-> **If Chrome doesn't open automatically:** Don't worry. The bot is still running. Just open Chrome yourself and type `http://127.0.0.1:7878` in the address bar. You'll see the dashboard.
-
----
-
-## PHASE 10: LAUNCH YOUR BOT
+## PHASE 8: LAUNCH YOUR BOT
 
 This is it. The moment your money starts working for you.
 
@@ -611,14 +484,14 @@ This is it. The moment your money starts working for you.
 
 Make sure:
 - ✅ ProtonVPN is connected and shows **Netherlands** or **Japan** (NOT United States)
-- ✅ You have USDT in your Blofin account (any amount — $2, $5, $50, all work)
-- ✅ Both credential files (`1B Blofin API.txt` and `1BananaOnTheWall Openrouter API Key.txt`) are in your Documents folder
-- ✅ Your desktop has the two icons: "OWL Swarm Launcher" and "Stop OWL Swarm"
+- ✅ You have USDT in your **Futures Wallet** on Blofin (not the Spot Wallet — see Phase 6)
+- ✅ Both credential files were created by the AI in the right locations
+- ✅ The AI created desktop shortcuts for you
 
 ### Launch!
 
-1. Double-click **OWL Swarm Launcher** on your desktop
-2. The blue PowerShell window opens. Watch it!
+1. Double-click the **OWL Swarm Launcher** icon the AI created on your desktop
+2. A blue PowerShell window opens. Watch it!
 3. You will see text scrolling. It will say things like:
    - "Killing old bots..."
    - "Starting dashboard server..."
@@ -661,23 +534,22 @@ When the bot finally places a trade, you will see:
 
 ---
 
-## PHASE 11: DAILY USE
+## PHASE 9: DAILY CHECK-IN
 
-Once everything is set up, running the bot is effortless.
+Once your bot is running, **you do NOT need to start it every day.** The bot stays running as long as your computer stays awake and the PowerShell window stays open.
 
-### Morning (30 Seconds)
-1. Check that ProtonVPN is still connected (green shield ✅)
-2. Double-click **OWL Swarm Launcher**
-3. Wait 30 seconds for the dashboard to open
-4. Check your equity — green means you're winning
-5. Leave your computer running (don't close the lid, don't put it to sleep)
+### How to Check If It's Still Running (10 Seconds)
 
-### Evening (Optional)
-1. Check dashboard for any open positions
-2. If you want to stop for the night: double-click **Stop OWL Swarm**
-3. Positions stay open on the exchange — they'll be managed when you restart
+1. Look at the dashboard in Chrome
+2. Look at the **top left corner**
+3. You should see:
+   - **"Running"** or a green indicator
+   - **"Updated: [time]"** that counts up by the second
+4. If the timestamp is still counting up, the bot is alive and working
+5. If the timestamp is frozen or missing, the bot stopped. Double-click **OWL Swarm Launcher** to restart it.
 
 ### Keep Your Computer Awake
+
 If your computer goes to sleep, the bot stops. Here's how to keep it awake:
 1. Press **Windows key**
 2. Type **"power"** and click **Edit Power Plan** or **Power & sleep settings**
@@ -685,19 +557,23 @@ If your computer goes to sleep, the bot stops. Here's how to keep it awake:
 4. Set **Sleep** to **Never**
 5. Click **Save changes**
 
+> **Important:** Don't close the PowerShell window. Don't close the Chrome tab. Don't put your laptop to sleep. The bot needs your computer to stay on. If you need to use your computer for other things, just minimize the PowerShell window — it will keep running in the background.
+
 ### Growing Your Account
+
 When you see the bot working and you want to add more money:
 1. Click **Stop OWL Swarm** to stop the bot
 2. Buy more USDT on Coinbase
 3. Send it to your same Blofin address (same TRC20 network, same $1 fee)
-4. Click **OWL Swarm Launcher** to restart
-5. The bot automatically uses the larger balance
+4. Transfer the new USDT from Spot Wallet to Futures Wallet (see Phase 6)
+5. Click **OWL Swarm Launcher** to restart
+6. The bot automatically uses the larger balance
 
 > **More money = more tradeable coins = more frequent trades. The bot scales with your balance. Your $5 proof-of-concept can become $50, then $500, then $5,000. The same bot. The same strategy. Just bigger numbers.**
 
 ---
 
-## PHASE 12: WHEN YOUR MONEY GROWS (OPTIONAL PALAU ID)
+## PHASE 10: WHEN YOUR MONEY GROWS (OPTIONAL PALAU ID)
 
 > **Is $20,000 per day enough for you?** Without verifying your identity, Blofin lets you withdraw up to $20,000 USDT every 24 hours. If you're starting with $5, this limit is more than enough. You will not touch it for a long time. If you grow to $1,000, you still won't touch it. If you grow to $10,000, you still won't touch it.
 >
@@ -808,6 +684,10 @@ The **Republic of Palau Digital Residency ID** is a real government-issued digit
 ### Chrome doesn't open by itself
 - No problem. The bot is still running. Open Chrome manually and type: `http://127.0.0.1:7878`
 
+### The bot shows $0 balance even though I have money on Blofin
+- **Your USDT is probably in the Spot Wallet, not the Futures Wallet.**
+- Fix: Go to Blofin → Assets → Transfer → move USDT from Spot to Futures (see Phase 6)
+
 ### ProtonVPN disconnects sometimes
 - In the ProtonVPN app, go to **Settings** and turn ON **Kill Switch** and **Always-On VPN**.
 - This stops ALL internet if the VPN drops, preventing accidental IP leaks.
@@ -871,100 +751,7 @@ cd ~/owl-swarm-trading-stack
 - `1B Blofin API.txt`
 - `1BananaOnTheWall Openrouter API Key.txt`
 
-> **Mac users: If you want the easiest path, use the AI helper way (Path A) below. The AI will handle all Mac vs Windows differences for you.**
-
----
-
-## THE AI HELPER WAY: USE A FREE AI ASSISTANT
-
-If everything above feels like a lot, **there is an easier way.** You can use a free AI chat assistant to guide you through every single step. You just copy and paste one prompt, and the AI tells you exactly what to do, what to click, and what to expect.
-
-### What You Need
-- A free AI chat (any of these work great):
-  - [Kimi](https://kimi.com) — free, fast, helpful
-  - [ChatGPT](https://chat.openai.com) — free tier available
-  - [Claude](https://claude.ai) — free tier available
-- About 15–20 minutes of following along
-
-### Step A: Open Your AI Chat
-
-1. Open Chrome
-2. Go to [kimi.com](https://kimi.com) or [chat.openai.com](https://chat.openai.com) or [claude.ai](https://claude.ai)
-3. Sign up for a free account (just email + password)
-4. You now have a free AI assistant that will help you through everything
-
-### Step B: Give the AI Your Prompt
-
-1. In the chat box, copy and paste this ENTIRE prompt (it's long, but it's everything the AI needs):
-
----
-
-```
-I need help setting up the OWL Swarm Trading Bot on my computer. I am a complete beginner and need patient, step-by-step guidance. Please do not assume I know anything about programming, command lines, or crypto.
-
-MY COMPUTER:
-- Windows 10/11 (or Mac — tell me which one you have)
-- My Windows username is: [TYPE YOUR USERNAME HERE]
-
-MY FILES:
-- I have a file on my Desktop called "My Blofin Keys.txt" with my Blofin API credentials
-- I have a file on my Desktop called "My OpenRouter Key.txt" with my OpenRouter API key
-
-WHAT I NEED YOU TO HELP ME DO:
-
-1. Check if Git, Python 3.12, and Node.js are installed on my computer. If any are missing, tell me exactly where to download them and what to click.
-
-2. Open Command Prompt (or Terminal on Mac) and run the git clone command to download the bot from https://github.com/mknight2690-sys/owl-swarm-trading-stack.git
-
-3. Read my Blofin credentials from "My Blofin Keys.txt" on my Desktop and create a new file at:
-   C:\Users\[MY USERNAME]\OneDrive\Documents\1B Blofin API.txt
-   (or /Users/[MY USERNAME]/Documents/1B Blofin API.txt on Mac)
-   Make sure the filename is EXACTLY "1B Blofin API.txt" with correct capitalization and spaces.
-
-4. Read my OpenRouter key from "My OpenRouter Key.txt" on my Desktop and create a new file at:
-   C:\Users\[MY USERNAME]\OneDrive\Documents\1BananaOnTheWall Openrouter API Key.txt
-   (or /Users/[MY USERNAME]/Documents/1BananaOnTheWall Openrouter API Key.txt on Mac)
-   Make sure the filename is EXACTLY "1BananaOnTheWall Openrouter API Key.txt" with correct capitalization and spaces.
-
-5. Install the Python dependencies by running: cd into the trading-engine folder and run "pip install -e ."
-
-6. Install the Node.js dependencies by running: cd into the owl-swarm-trading-stack folder and run "npm install"
-
-7. Compile the dashboard by running: "npx tsc --project tsconfig.json"
-
-8. Create desktop shortcuts for the launch and stop scripts.
-
-9. Launch the bot and open the dashboard.
-
-Please explain each step in plain English before we do it. Tell me exactly what to type or click. If I get an error, help me fix it. I am completely new to this, so please be patient and thorough.
-```
-
----
-
-3. **Before sending:** Replace `[TYPE YOUR USERNAME HERE]` with your actual Windows username (the one you see when you log in to your computer). If you're on Mac, replace `[MY USERNAME]` with your Mac username.
-4. Press **Enter** or click the send button
-5. The AI will now guide you through every step, one at a time
-
-### How This Works
-
-The AI will:
-- Tell you exactly what software to install and where to get it
-- Give you the exact commands to type
-- Help you troubleshoot if anything goes wrong
-- Explain what each step does in plain English
-- Wait for you to confirm before moving to the next step
-
-**If you get stuck:** Just type "I don't understand" or "That didn't work" and the AI will explain it differently or help you fix it. There is no rush. The AI is patient.
-
-### Why This Way Works
-
-- **No guesswork.** The AI adapts to your exact situation.
-- **Real-time help.** If something breaks, you ask and get an answer immediately.
-- **You learn by doing.** You see what works, so you understand your setup better.
-- **Completely free.** Kimi, ChatGPT, and Claude all have free tiers that handle this perfectly.
-- **Works on both Windows and Mac.** The AI knows the difference and guides you accordingly.
-
-> **If the AI path hits a problem at any point, you can switch to the manual steps above for just that one step, then go back to the AI.** There's no wrong way to do this. The only wrong way is giving up. You can do this.
+> **Mac users: When you use the AI assistant, just tell it you're on Mac. The AI will automatically use Terminal instead of Command Prompt and adapt all paths for you.**
 
 ---
 
@@ -974,14 +761,16 @@ The AI will:
 |---|---|
 | **Start the bot** | Double-click **OWL Swarm Launcher** icon |
 | **Stop the bot** | Double-click **Stop OWL Swarm** icon |
+| **Check if bot is running** | Look at dashboard top-left — "Updated" timestamp should count up |
 | **See my dashboard** | Open Chrome → type `http://127.0.0.1:7878` |
 | **Check my trades** | Go to [blofin.com](https://blofin.com) → log in → Positions tab |
-| **Add more money** | Coinbase → Buy USDT → Send to Blofin (TRC20 network) |
+| **Add more money** | Coinbase → Buy USDT → Send to Blofin (TRC20 network) → Transfer to Futures Wallet |
+| **Move money to Futures Wallet** | Blofin → Assets → Transfer → Spot → Futures |
 | **Update the bot code** | Command Prompt → `cd owl-swarm-trading-stack` → `git pull` |
 | **Check bot logs** | Open `C:\Users\YOU\owl-swarm-trading-stack\outputs\live-run.log` in Notepad |
 | **Change VPN server** | ProtonVPN → **Change Server** → wait 1:30 / 1:40 / 1:50 |
 | **Get Palau ID** | [rns.id](https://rns.id) → $248/year → unlocks $1M/day withdrawals |
-| **Get AI help with setup** | Go to [kimi.com](https://kimi.com) or [chat.openai.com](https://chat.openai.com) → paste the prompt from the AI Helper Way section |
+| **Get AI help with setup** | Go to [kimi.com](https://kimi.com) → paste the prompt from Phase 7 |
 
 ---
 
@@ -989,6 +778,7 @@ The AI will:
 
 - [ ] My Blofin API key only has **Read** and **Trade** permissions (Withdraw is OFF)
 - [ ] My API keys are stored in text files, NOT pasted into the bot code
+- [ ] My USDT is in the **Futures Wallet** on Blofin (not Spot Wallet)
 - [ ] ProtonVPN is always connected to **Netherlands** or **Japan** when the bot runs
 - [ ] My computer has a password/login screen
 - [ ] Nobody else uses my computer or knows my credential file locations
