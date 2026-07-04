@@ -1,6 +1,6 @@
 # OWL SWARM TRADING STACK — Complete A-to-Z Setup Tutorial
 
-**Version:** 1.1 ($5 Start Edition) | **Updated:** 2026-07-03  
+**Version:** 1.2 ($5 Start + VPN Country Guide) | **Updated:** 2026-07-03  
 **What this is:** Turn your Windows laptop into a 24/7 automated crypto futures trading bot. Deposit **$5 USDT**, connect to Blofin, launch once, and watch the dashboard.
 
 > **WARNING:** $5 is extremely tight. Network fees eat $1. Minimum contract sizes on some perps require more than $4 notional. The bot will scan ~500 coins and trade only the ones it can afford. It will work — but slowly. Expect 0–1 micro-trades per day on a $5 account. For faster results, start with $20–$50.
@@ -90,7 +90,33 @@ You need **USDT** (Tether) on the **Blofin** exchange. USDT is a "stablecoin" pe
 
 ## PHASE 2: VPN SETUP (PROTONVPN)
 
-**Why:** Your ISP and the exchange can see your trading activity. A VPN masks your IP. ProtonVPN is Swiss-based, free tier works fine.
+### Why You NEED a VPN
+
+**1. Privacy from your ISP** — Your internet provider can see every website you visit, including crypto exchanges. They sell this data. A VPN encrypts everything so your ISP sees nothing.
+
+**2. Exchange geo-restrictions** — Blofin (like many crypto exchanges) blocks or flags users from certain countries (especially the US, Canada, China, and sanctioned nations). If Blofin detects your real location, they may freeze your account or block API access. A VPN makes you appear to be in an accepted country.
+
+**3. IP tracking protection** — Without a VPN, Blofin logs your home IP address every time the bot connects. If your IP changes (which happens naturally), Blofin may flag it as suspicious activity and temporarily lock API access. A VPN gives you a stable, consistent IP.
+
+**4. Government surveillance shield** — Some governments monitor crypto trading activity. A VPN (especially Swiss-based ProtonVPN) puts a legal wall between you and surveillance.
+
+### Blofin-Accepted VPN Countries
+
+Blofin generally **ACCEPTS** users from these regions:
+- **Europe:** United Kingdom, Netherlands, Germany, France, Spain, Italy, Poland, Switzerland, Sweden, Norway, Portugal, Belgium, Austria, Ireland, Finland, Denmark, Czech Republic, Romania, Greece, Hungary
+- **Asia-Pacific:** Singapore, Japan, South Korea, Malaysia, Thailand, Vietnam, Indonesia, Philippines, Taiwan, Hong Kong, Australia, New Zealand, India
+- **Latin America:** Brazil, Mexico, Argentina, Colombia, Chile, Peru, Venezuela
+- **Middle East / Africa:** Turkey, UAE, South Africa, Nigeria, Kenya, Egypt, Morocco, Saudi Arabia, Qatar
+
+Blofin generally **BLOCKS or FLAGS** users from:
+- **United States** (all states)
+- **Canada**
+- **Mainland China**
+- **Russia** (sanctions-related)
+- **North Korea, Iran, Syria, Cuba, Sudan** (sanctioned nations)
+- **Any country on the OFAC sanctions list**
+
+> **If you are physically located in a blocked country** (like the US), you MUST use a VPN server in an accepted country. If Blofin detects a US IP, they will block API access and the bot cannot trade.
 
 ### Step 2.1: Sign Up
 
@@ -107,13 +133,53 @@ You need **USDT** (Tether) on the **Blofin** exchange. USDT is a "stablecoin" pe
 4. Launch ProtonVPN app
 5. Log in with your email/password
 
-### Step 2.3: Connect
+### Step 2.3: Connect to an Accepted Country
 
-1. In the app, click **Quick Connect** or pick any server
-2. Wait for the green shield icon ✅
-3. **Leave it connected 24/7 while the bot runs**
+1. In the ProtonVPN app, you will see a list of countries
+2. Pick a country from the **ACCEPTED** list above
+3. **Recommended first choices:** Netherlands, United Kingdom, Singapore, or Germany — these are reliable and fast
+4. Click the country name to connect
+5. Wait for the green shield icon ✅
 
-> **Pro tip:** Pin ProtonVPN to your taskbar. Check it every morning to make sure it's still connected.
+### Step 2.4: The Server-Changing Protocol (IMPORTANT)
+
+Sometimes the first server you connect to doesn't work well with Blofin. ProtonVPN free tier gives you access to servers in 3 countries (Netherlands, United States, Japan). **You need Netherlands or Japan** — NOT United States.
+
+**If your first connection is slow or Blofin loads weird, follow this timing:**
+
+1. **Connect to your first server** (Netherlands recommended)
+2. **Wait 1 minute 30 seconds** for the connection to fully stabilize
+3. Try loading **https://www.blofin.com** in Chrome
+   - If Blofin loads normally → you're good, leave it
+   - If Blofin shows "access denied," "region restricted," or won't load → change server
+4. **Click "Change Server" in ProtonVPN**
+5. **Wait 1 minute 40 seconds** for the new connection to stabilize
+6. Try Blofin again
+   - If it works → leave it
+   - If it still doesn't work → change server one more time
+7. **Click "Change Server" again**
+8. **Wait 1 minute 50 seconds** for the third connection to stabilize
+9. Try Blofin again
+   - If it works → leave it
+   - If it STILL doesn't work → restart ProtonVPN app entirely and try a different accepted country
+
+> **Why the wait times matter:** ProtonVPN's free servers have a 2-minute cooldown between switches. If you change too fast, you get kicked to a worse server. The 1:30 → 1:40 → 1:50 progression stays just under the cooldown threshold while giving each server enough time to fully handshake with Blofin's CDN.
+
+### Step 2.5: Verify Your VPN Location
+
+1. With ProtonVPN connected, open Chrome
+2. Go to **https://whatismyipaddress.com**
+3. The page should show the **country you selected** (NOT your real country)
+4. If it shows your real country, the VPN is not working — reconnect
+
+### Step 2.6: Leave It Connected
+
+- **Leave ProtonVPN connected 24/7 while the bot runs**
+- Pin ProtonVPN to your taskbar
+- Check it every morning to make sure it's still connected (green shield ✅)
+- If it disconnects overnight, the bot may hit API errors when it tries to trade
+
+> **Pro tip:** In ProtonVPN settings, enable **Kill Switch** and **Always-On VPN**. This prevents ANY internet traffic if the VPN drops — protecting you from accidental IP leaks.
 
 ---
 
@@ -123,7 +189,7 @@ Blofin is the crypto exchange where the bot trades USDT-M perpetual futures.
 
 ### Step 3.1: Create Blofin Account
 
-1. Go to **https://www.blofin.com** (make sure VPN is connected first)
+1. Go to **https://www.blofin.com** (make sure VPN is connected to an accepted country first)
 2. Click **Sign Up** in top right
 3. Use your email (can be same as ProtonVPN or different)
 4. Create a strong password
@@ -132,6 +198,8 @@ Blofin is the crypto exchange where the bot trades USDT-M perpetual futures.
 7. Set up **2FA** (Google Authenticator app) — required for API keys
 
 > **Note:** KYC is required even for a $5 account. It's the exchange's rule, not the bot's.
+
+> **CRITICAL:** During signup, Blofin may ask for your country. Select the SAME country your VPN is connected to. If your VPN is Netherlands, say you're from Netherlands. If you say United States while on a Netherlands VPN, Blofin will detect the mismatch and flag your account.
 
 ### Step 3.2: Get Your Deposit Address (for the Coinbase transfer)
 
@@ -444,7 +512,8 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypas
 ## PHASE 10: FIRST LAUNCH
 
 This is the moment. Make sure:
-- ✅ ProtonVPN is connected
+- ✅ ProtonVPN is connected to an **accepted country**
+- ✅ You verified your VPN location at whatismyipaddress.com
 - ✅ You have USDT in your Blofin account (even $4 is fine)
 - ✅ Both credential files are created
 - ✅ All software is installed
@@ -510,10 +579,11 @@ Once set up, running the bot takes 30 seconds per day.
 ### Morning Routine
 
 1. Check ProtonVPN is connected (green shield ✅)
-2. Double-click **OWL Swarm Launcher**
-3. Wait 30 seconds for dashboard to open
-4. Check your equity — if it's green, you're winning
-5. Leave laptop running (don't close lid, or set lid-close to "Do nothing")
+2. Check you're on an **accepted country** (NOT United States)
+3. Double-click **OWL Swarm Launcher**
+4. Wait 30 seconds for dashboard to open
+5. Check your equity — if it's green, you're winning
+6. Leave laptop running (don't close lid, or set lid-close to "Do nothing")
 
 ### Evening Routine
 
@@ -597,6 +667,12 @@ Once you've seen the bot trade successfully for a week:
 - This happens if your balance is under $3 after fees
 - **Fix:** Add $5–$10 more to the account. The minimum viable balance is ~$4.
 
+### Blofin says "Access from your region is restricted"
+- Your VPN connected to a **blocked country** (likely United States)
+- **Fix:** Disconnect ProtonVPN, reconnect to Netherlands / UK / Singapore / Germany
+- Use the **Server-Changing Protocol** from Phase 2.4
+- Verify at whatismyipaddress.com before launching the bot
+
 ---
 
 ## QUICK REFERENCE CHEAT SHEET
@@ -610,6 +686,7 @@ Once you've seen the bot trade successfully for a week:
 | **Add more money** | Coinbase → Buy USDT → Send to Blofin (TRC20) |
 | **Update bot code** | Git Bash → `cd owl-swarm-trading-stack && git pull` |
 | **Check logs** | Open `C:\Users\YOU\owl-swarm-trading-stack\outputs\live-run.log` in Notepad |
+| **Check VPN country** | Chrome → `whatismyipaddress.com` |
 
 ---
 
@@ -617,7 +694,7 @@ Once you've seen the bot trade successfully for a week:
 
 - [ ] API keys only have **Read + Trade** permissions (NO Withdraw)
 - [ ] API keys are stored in `.txt` files, NOT in the code
-- [ ] VPN is always connected while bot runs
+- [ ] VPN is always connected to an **accepted country** while bot runs
 - [ ] Laptop has a login password
 - [ ] No one else has access to your credential files
 - [ ] You understand the bot can lose money — only trade what you can afford to lose
