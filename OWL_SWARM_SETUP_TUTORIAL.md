@@ -1,14 +1,16 @@
 # OWL SWARM TRADING STACK — Complete A-to-Z Setup Tutorial
 
-**Version:** 1.0 | **Updated:** 2026-07-03  
-**What this is:** Turn your Windows laptop into a 24/7 automated crypto futures trading bot. Deposit ~$50 USDT, connect to Blofin, launch once, and watch the dashboard.
+**Version:** 1.1 ($5 Start Edition) | **Updated:** 2026-07-03  
+**What this is:** Turn your Windows laptop into a 24/7 automated crypto futures trading bot. Deposit **$5 USDT**, connect to Blofin, launch once, and watch the dashboard.
+
+> **WARNING:** $5 is extremely tight. Network fees eat $1. Minimum contract sizes on some perps require more than $4 notional. The bot will scan ~500 coins and trade only the ones it can afford. It will work — but slowly. Expect 0–1 micro-trades per day on a $5 account. For faster results, start with $20–$50.
 
 ---
 
 ## TABLE OF CONTENTS
 
 1. [Phase 0: What You Need](#phase-0-what-you-need)
-2. [Phase 1: Crypto Onramp (Fiat → USDT)](#phase-1-crypto-onramp-fiat--usdt)
+2. [Phase 1: Crypto Onramp ($5 → USDT)](#phase-1-crypto-onramp-5--usdt)
 3. [Phase 2: VPN Setup (ProtonVPN)](#phase-2-vpn-setup-protonvpn)
 4. [Phase 3: Blofin Account + API Keys](#phase-3-blofin-account--api-keys)
 5. [Phase 4: OpenRouter Free API Key](#phase-4-openrouter-free-api-key)
@@ -32,8 +34,9 @@
 - **Chrome browser** installed
 
 ### Money
-- **~$50 to $100 on your debit card** for initial USDT deposit
+- **$5 on your debit card** for initial USDT deposit
 - **$0 for software** — everything is free/open-source
+- **$1 will be eaten by network fees** — you get ~$4 on the exchange
 
 ### Accounts You Will Create (all free)
 1. **ProtonVPN** (free tier) — hides your IP from the exchange
@@ -45,21 +48,32 @@
 - **First setup:** 45–60 minutes
 - **Daily operation:** 30 seconds (double-click launcher)
 
+### Realistic Expectations on $5
+- The bot scans ~500 USDT perpetuals
+- It trades **micro-contracts** (the smallest size allowed per coin)
+- At 50x leverage, $4 = $200 notional — enough for some alts, not all
+- **Expect:** 0–1 trades per day, maybe 0 for a week if nothing fits
+- **This is normal.** The risk gate won't trade if it can't afford the minimum contract size
+- **The bot is still working** — scanning, analyzing, waiting for the right setup
+- For more frequent trades, add more capital later
+
 ---
 
-## PHASE 1: CRYPTO ONRAMP (FIAT → USDT)
+## PHASE 1: CRYPTO ONRAMP ($5 → USDT)
 
-You need **USDT** (Tether) on the **Blofin** exchange. USDT is a "stablecoin" pegged to $1. Here's the easiest path:
+You need **USDT** (Tether) on the **Blofin** exchange. USDT is a "stablecoin" pegged to $1.
 
-### Step 1.1: Buy USDT on Coinbase (or any exchange you already use)
+### Step 1.1: Buy $5 USDT on Coinbase (or any exchange you already use)
 
 1. Go to **https://www.coinbase.com**
 2. Sign up / log in
 3. Click **Buy & Sell** at top
 4. Select **USDT** (Tether)
-5. Enter amount: **$50** (or whatever you want to trade with)
+5. Enter amount: **$5**
 6. Pay with your **debit card**
 7. Confirm purchase
+
+> **Note:** Coinbase has a minimum purchase of ~$2. $5 is fine. If you can't buy $5, buy the minimum and add more later.
 
 ### Step 1.2: Send USDT to Blofin
 
@@ -68,9 +82,9 @@ You need **USDT** (Tether) on the **Blofin** exchange. USDT is a "stablecoin" pe
 3. Choose network: **TRC20** (Tron) — cheapest fees (~$1)
 4. Coinbase will ask for a **destination address**
 
-**BEFORE you can get the address, you need a Blofin account.** Continue to Phase 3, create your Blofin account, then come back here to get your deposit address.
+> **IMPORTANT:** You will pay ~$1 in network fees. So your $5 becomes ~$4 on Blofin. This is why $5 is tight. If you can afford $10 or $20, do it — you'll get more trades and the $1 fee is the same.
 
-> **IMPORTANT:** Start with $50 only. This is a micro-scalper. It trades tiny sizes. You can add more later once you see it working.
+**BEFORE you can get the address, you need a Blofin account.** Continue to Phase 3, create your Blofin account, then come back here to get your deposit address.
 
 ---
 
@@ -117,6 +131,8 @@ Blofin is the crypto exchange where the bot trades USDT-M perpetual futures.
 6. Complete basic KYC (upload ID photo + selfie) — this is required for withdrawals
 7. Set up **2FA** (Google Authenticator app) — required for API keys
 
+> **Note:** KYC is required even for a $5 account. It's the exchange's rule, not the bot's.
+
 ### Step 3.2: Get Your Deposit Address (for the Coinbase transfer)
 
 1. Log in to Blofin
@@ -126,6 +142,8 @@ Blofin is the crypto exchange where the bot trades USDT-M perpetual futures.
 5. Copy the **deposit address** (long string of letters/numbers)
 6. Go back to Coinbase, paste this address, and send the USDT
 7. Wait 5–10 minutes for it to arrive
+
+> **After fees, you should see ~$4 USDT in your Blofin account.** If you see less, don't worry — the bot works with whatever is there.
 
 ### Step 3.3: Create API Keys
 
@@ -427,7 +445,7 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypas
 
 This is the moment. Make sure:
 - ✅ ProtonVPN is connected
-- ✅ You have USDT in your Blofin account
+- ✅ You have USDT in your Blofin account (even $4 is fine)
 - ✅ Both credential files are created
 - ✅ All software is installed
 
@@ -449,18 +467,39 @@ This is the moment. Make sure:
 - **Top left:** Timestamp ticking every second
 - **Equity number:** Smoothly sliding (not jumping)
 
-### Step 10.3: Verify It's Trading
+### Step 10.3: What If No Trades Happen?
+
+On a $4–$5 account, this is **completely normal** for the first few hours or even days. The bot is:
+- Scanning ~500 USDT perpetuals
+- Checking which ones it can afford at 50x leverage with your $4 balance
+- Waiting for a setup that meets the probability threshold (≥45%)
+- Waiting for sentiment that doesn't contradict the signal
+
+**You will see:**
+- Cycles running every 30 seconds
+- "Risk-Manager" and "Execution-Agent" in the log
+- "No candidate passed risk gate" or "No trade opportunity" — this is the bot protecting your $5
+
+**You will NOT see:**
+- Trades on expensive coins like BTC or ETH ($4 can't afford them at minimum contract size)
+- Trades during flat/choppy markets
+- Trades when the AI is rate-limited by OpenRouter
+
+> **Patience is required.** The bot trades **micro-contracts on cheap alts** (like ROSE, WLD, STABLE, GOAT). With $4, only a subset of coins are affordable. It will find them. Just wait.
+
+### Step 10.4: Verify It's Trading (When It Finally Does)
 
 1. Look at the dashboard **Positions** section
 2. If you see a row like `ROSE-USDT LONG Size: 0.001 Entry: 0.0423 Mark: 0.0424 P&L: +0.0002` — the bot is trading!
 3. Check Blofin website → **Positions** tab — you should see the same position there
 
-### Step 10.4: First 24 Hours
+### Step 10.5: First Week on $5
 
-- The bot will place 0–3 trades per day on a $50 account
-- Each trade is tiny (micro-contracts)
-- Don't panic if no trades happen for hours — the risk gate waits for good setups
-- The bot uses 50x leverage, so a 1% move = 50% P&L on that position
+- **Day 1–3:** Probably 0 trades. The bot is learning the market and scanning.
+- **Day 4–7:** 1–3 micro-trades on cheap alts. Each position is tiny.
+- **Week 2+:** If the market is moving, you'll see more activity.
+
+> **Don't expect to get rich on $5.** This is a **proof-of-concept** amount. The bot is designed to compound. Once you see it working, add $20 or $50 and the frequency scales up.
 
 ---
 
@@ -491,6 +530,17 @@ Once set up, running the bot takes 30 seconds per day.
 5. Click **Save changes**
 
 This keeps your laptop awake forever.
+
+### Scaling Up (When You're Ready)
+
+Once you've seen the bot trade successfully for a week:
+1. Double-click **Stop OWL Swarm**
+2. Go to Coinbase → Buy more USDT
+3. Send to Blofin (same address, same TRC20 network, same $1 fee)
+4. Double-click **OWL Swarm Launcher**
+5. The bot will automatically use the larger balance and trade more coins
+
+> **Recommended next step:** Add $20–$50. At $50, the bot can trade 10–20x more coins and you'll see daily activity.
 
 ---
 
@@ -528,15 +578,24 @@ This keeps your laptop awake forever.
 - In ProtonVPN settings, enable **Kill Switch** and **Always-On VPN**
 - This prevents any internet traffic if the VPN drops
 
-### Bot is not placing trades
-- Check the PowerShell log for "Risk gate veto" or "No candidate passed"
-- This means the market is choppy and the bot is waiting for a good setup
-- This is CORRECT behavior — survival first, profit second
+### Bot is not placing trades (most common on $5)
+- **This is expected.** Check the PowerShell log for:
+  - `"Risk gate veto"` — the signal wasn't strong enough
+  - `"No candidate passed"` — nothing met the probability threshold
+  - `"insufficient margin"` — the coin is too expensive for your $4 balance
+  - `"no trade opportunity"` — the AI didn't find a good setup
+- **All of these are correct behavior.** The bot is protecting your $5.
+- **Fix:** Wait. Or add more capital ($20–$50) so the bot can afford more coins.
 
 ### Equity is dropping
 - Small drawdowns are normal in scalping
 - The bot cuts losses fast (automatic stop-losses on every trade)
 - If equity drops more than 20% from peak, double-click **Stop OWL Swarm** and investigate
+- On $5, a 20% drawdown is $1 — that's the cost of a bad trade. The bot will recover.
+
+### "My balance is too low for any trade"
+- This happens if your balance is under $3 after fees
+- **Fix:** Add $5–$10 more to the account. The minimum viable balance is ~$4.
 
 ---
 
@@ -565,26 +624,25 @@ This keeps your laptop awake forever.
 
 ---
 
-## CREDITS
+## REALITY CHECK: $5 vs $50
 
-- **OWL Swarm Trading Stack** by mknight2690
-- Built on **AutoHedge** by The Swarm Corporation
-- Dashboard: TypeScript + Node.js
-- Engine: Python + LLM swarm intelligence
-- Exchange: Blofin
+| | **$5 Start** | **$50 Start** |
+|---|---|---|
+| **Initial deposit** | $5 (minus $1 fee = $4) | $50 (minus $1 fee = $49) |
+| **Trades per week** | 0–3 | 5–15 |
+| **Coins tradeable** | Cheap alts only (~50 coins) | Cheap + mid alts (~200 coins) |
+| **Profit potential** | Micro-cents per trade | Dollars per trade |
+| **Compounding speed** | Very slow | Moderate |
+| **Purpose** | Prove the bot works | Actually make money |
 
----
-
-## SUPPORT
-
-If you get stuck:
-1. Read the error message in the PowerShell window carefully
-2. Check the **Troubleshooting** section above
-3. Look at the log file: `C:\Users\YOURNAME\owl-swarm-trading-stack\outputs\live-run.log`
-4. Open a GitHub issue at: https://github.com/mknight2690-sys/owl-swarm-trading-stack/issues
+> **$5 is a test run.** It proves the stack works on your machine. Once you see the bot place its first trade and manage it with a stop-loss, you'll have confidence. Then add $20–$50 and let it run.
 
 ---
 
-**END OF TUTORIAL**
+## END OF TUTORIAL
 
-**Now go make money.** 🦉
+**Now go prove it works.** 🦉
+
+**File saved to:** `C:\Users\mknig\OneDrive\Documents\Kimi\Workspaces\Owl Swarm\OWL_SWARM_SETUP_TUTORIAL.md`
+
+**Public link:** https://github.com/mknight2690-sys/owl-swarm-trading-stack/blob/master/OWL_SWARM_SETUP_TUTORIAL.md
