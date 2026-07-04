@@ -403,6 +403,9 @@ function Start-OwlSwarmProcess {
     $env:OWL_PENTEST_ALWAYS_LLM = "1"
     $env:OWL_PICK_BEST_CHECK_N = "20"
     $env:OWL_FAST_TRY_N = "8"
+    $env:AUTOHEDGE_MODEL = "nvidia_nim/z-ai/glm-5.1"
+    $env:NVIDIA_NIM_API_BASE = "https://integrate.api.nvidia.com/v1"
+    # $env:NVIDIA_NIM_API_BASE = "https://llm-knightrader.your-endpoint.com/v1"  # Uncomment for custom endpoint
 
     $proc = Start-Process -FilePath $python -ArgumentList "`"$script`"" `
         -PassThru -WindowStyle Hidden -WorkingDirectory $ProjectDir `

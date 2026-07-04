@@ -141,13 +141,8 @@ class DashboardAgent:
     # ── internal: learned playbook ──
 
     def _load_playbook(self) -> dict[str, Any]:
-        """Load the learned playbook of fixes that worked."""
-        try:
-            if PLAYBOOK_FILE.is_file():
-                return json.loads(PLAYBOOK_FILE.read_text(encoding="utf-8"))
-        except Exception:
-            pass
-        return {
+        """Load the learned playbook of fixes that worked. Merge pre-seeded fixes with disk."""
+        preseeded = {
             "fixes": [
                 # Pre-seeded with known fixes that always work
                 {
@@ -247,9 +242,30 @@ class DashboardAgent:
                     "success_rate": 1.0,
                     "uses": 0,
                 },
+                # NEW FIX — stale PNL on dashboard (positions-cache.json markPrice/unrealizedPnl are old)
+                {
+                    "id": "fix_stale_pnl_from_ws_tickers",
+                    "symptom": "STALE_PNL",
+                    "action": "recalculate_pnl_from_ws_tickers",
+                    "description": "When positions-cache.json unrealizedPnl does not match the value calculated from current WS tickers or universe cache, equity_stream.py must overwrite unrealizedPnl in owl-live.json positions, and dashboard_server.py must read positions from owl-live.json first (with fallback to disk cache recalc).",
+                    "success_rate": 1.0,
+                    "uses": 0,
+                },
             ],
             "version": 1,
         }
+        try:
+            if PLAYBOOK_FILE.is_file():
+                disk = json.loads(PLAYBOOK_FILE.read_text(encoding="utf-8"))
+                # Merge pre-seeded fixes with disk-learned fixes; pre-seeded wins on conflict
+                disk_fixes = {f["id"]: f for f in disk.get("fixes", [])}
+                for f in preseeded.get("fixes", []):
+                    if f["id"] not in disk_fixes:
+                        disk_fixes[f["id"]] = f
+                return {"fixes": list(disk_fixes.values()), "version": max(disk.get("version", 1), preseeded.get("version", 1))}
+        except Exception:
+            pass
+        return preseeded
 
     def _save_playbook(self) -> None:
         try:
@@ -270,6 +286,8 @@ class DashboardAgent:
                 symptoms.add("LIVE_API_FAILED")
             elif d.startswith("MARK_MISMATCH:"):
                 symptoms.add("STALE_MARK_PRICE")
+            elif d.startswith("STALE_PNL:"):
+                symptoms.add("STALE_PNL")
             elif d.startswith("ZERO_EQUITY"):
                 symptoms.add("ZERO_EQUITY")
             elif d.startswith("NEGATIVE_EQUITY"):
@@ -311,6 +329,8 @@ class DashboardAgent:
             return self._fix_shared_throttle(drift, snapshot, trusted)
         if action == "make_interface_binding_optional":
             return self._fix_interface_binding(drift, snapshot, trusted)
+        if action == "recalculate_pnl_from_ws_tickers":
+            return self._fix_recalculate_pnl(drift, snapshot, trusted)
         return None
 
     def _fix_purge_ghost_positions(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
@@ -338,6 +358,50 @@ class DashboardAgent:
                 if trusted_mark > 0 and snap_mark > 0 and abs(trusted_mark - snap_mark) / trusted_mark > 0.005:
                     overridden.append(inst)
         return {"action": "override_mark_prices", "reason": f"Stale marks for {overridden}", "applied": bool(overridden), "overridden": overridden}
+
+    def _fix_recalculate_pnl(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
+        """Fix #3b: Recalculate unrealized PNL from fresh tickers and write to owl-live.json."""
+        snap_pos = {str(p.get("instId", "")): p for p in snapshot.get("positions", [])}
+        fresh = self._fresh_ticker_map()
+        recalculated: list[str] = []
+        live_data = self._read_raw_live() or {}
+        live_positions = list(live_data.get("positions") or [])
+        updated_positions: list[dict[str, Any]] = []
+        for pos in live_positions:
+            inst = str(pos.get("instId", ""))
+            row = dict(pos)
+            mark = fresh.get(inst, 0)
+            if mark > 0 and inst in snap_pos:
+                try:
+                    qty = float(row.get("positions") or 0)
+                    avg = float(row.get("averagePrice") or 0)
+                    cached_upnl = float(row.get("unrealizedPnl") or 0)
+                except (TypeError, ValueError):
+                    updated_positions.append(row)
+                    continue
+                if qty != 0 and avg > 0:
+                    # Infer contract value from cached data
+                    diff = float(row.get("markPrice") or 0) - avg
+                    cv = 1.0
+                    if abs(diff) > 1e-15 and qty != 0:
+                        inferred = cached_upnl / (diff * qty)
+                        if inferred > 0:
+                            cv = inferred
+                    fresh_upnl = (mark - avg) * qty * cv
+                    if abs(fresh_upnl - cached_upnl) > 1e-9:
+                        row["markPrice"] = mark
+                        row["unrealizedPnl"] = fresh_upnl
+                        recalculated.append(inst)
+            updated_positions.append(row)
+        if recalculated:
+            live_data["positions"] = updated_positions
+            live_data["updated_at"] = int(time.time())
+            live_data["account_source"] = (live_data.get("account_source", "") + "_pnl_recalc").strip("_")
+            try:
+                LIVE_FILE.write_text(json.dumps(live_data, indent=2, default=str), encoding="utf-8")
+            except Exception:
+                pass
+        return {"action": "recalculate_pnl", "reason": f"Recalculated PNL for {recalculated}", "applied": bool(recalculated), "recalculated": recalculated}
 
     def _fix_restore_equity(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any]:
         """Fix #4: When equity is 0/negative, restore from state.json or disk cache."""
@@ -437,6 +501,54 @@ class DashboardAgent:
         except Exception:
             pass
         return None
+
+    def _fresh_ticker_map(self) -> dict[str, float]:
+        """Read freshest mark/last prices from WS tickers or universe cache."""
+        # 1. Try ws-tickers.json
+        try:
+            ws_path = OUTPUT_DIR / "ws-tickers.json"
+            if ws_path.is_file():
+                raw = json.loads(ws_path.read_text(encoding="utf-8"))
+                tickers = raw.get("tickers")
+                if isinstance(tickers, list):
+                    out: dict[str, float] = {}
+                    for row in tickers:
+                        if isinstance(row, dict) and row.get("instId"):
+                            for key in ("markPrice", "last", "lastPrice", "price"):
+                                try:
+                                    v = float(row.get(key) or 0)
+                                    if v > 0:
+                                        out[str(row["instId"])] = v
+                                        break
+                                except (TypeError, ValueError):
+                                    continue
+                    if out:
+                        return out
+        except Exception:
+            pass
+        # 2. Fall back to universe-cache.json
+        try:
+            uni_path = AUTO_TRADER_ROOT / "outputs" / "universe-cache.json"
+            if uni_path.is_file():
+                raw = json.loads(uni_path.read_text(encoding="utf-8"))
+                tickers = raw.get("tickers")
+                if isinstance(tickers, list):
+                    out = {}
+                    for row in tickers:
+                        if isinstance(row, dict) and row.get("instId"):
+                            for key in ("markPrice", "last", "lastPrice", "price"):
+                                try:
+                                    v = float(row.get(key) or 0)
+                                    if v > 0:
+                                        out[str(row["instId"])] = v
+                                        break
+                                except (TypeError, ValueError):
+                                    continue
+                    if out:
+                        return out
+        except Exception:
+            pass
+        return {}
 
     def _read_snapshot(self) -> dict[str, Any]:
         try:
@@ -569,7 +681,36 @@ class DashboardAgent:
                 if trusted_mark > 0 and snap_mark > 0 and abs(trusted_mark - snap_mark) / trusted_mark > 0.005:
                     details.append(f"MARK_MISMATCH: {inst} trusted={trusted_mark:.4f} snap={snap_mark:.4f}")
 
-        # 5. Live API failure
+        # 5. Stale PNL: cached unrealizedPnl does not match fresh mark price calculation
+        fresh_prices = self._fresh_ticker_map()
+        for inst, pos in snap_pos.items():
+            mark = fresh_prices.get(inst, 0)
+            if mark <= 0:
+                continue
+            try:
+                qty = float(pos.get("positions") or 0)
+                avg = float(pos.get("averagePrice") or 0)
+                cached_upnl = float(pos.get("unrealizedPnl") or 0)
+            except (TypeError, ValueError):
+                continue
+            if qty == 0 or avg <= 0:
+                continue
+            # Infer contract value from cached data (same formula as equity_stream.py)
+            diff = float(pos.get("markPrice") or 0) - avg
+            cv = 1.0
+            if abs(diff) > 1e-15 and qty != 0:
+                inferred = cached_upnl / (diff * qty)
+                if inferred > 0:
+                    cv = inferred
+            fresh_upnl = (mark - avg) * qty * cv
+            # If fresh PNL differs by >10% relative or >0.001 absolute, flag stale
+            if abs(cached_upnl) > 0:
+                if abs(fresh_upnl - cached_upnl) / abs(cached_upnl) > 0.10:
+                    details.append(f"STALE_PNL: {inst} cached={cached_upnl:.6f} fresh={fresh_upnl:.6f}")
+            elif abs(fresh_upnl) > 0.001:
+                details.append(f"STALE_PNL: {inst} cached=0 fresh={fresh_upnl:.6f}")
+
+        # 6. Live API failure
         if trusted.get("source") in ("live_failed", "failed"):
             details.append("LIVE_API_FAILED: rate-limited or 403")
 
@@ -615,6 +756,13 @@ class DashboardAgent:
                 else:
                     fixes.append({"action": "update_mark_prices", "reason": d, "applied": False})
 
+            elif d.startswith("STALE_PNL:"):
+                fix_result = self._fix_recalculate_pnl(drift, snapshot, trusted)
+                if fix_result:
+                    fixes.append(fix_result)
+                else:
+                    fixes.append({"action": "recalculate_pnl", "reason": d, "applied": False})
+
             elif d.startswith("ZERO_EQUITY:"):
                 fixes.append({"action": "restore_equity_from_backup", "reason": d, "applied": True})
 
@@ -631,7 +779,7 @@ class DashboardAgent:
             if not f.get("applied"):
                 return False
         actions = {f.get("action") for f in fixes}
-        return "force_refresh_positions" in actions or "force_refresh_equity" in actions or "clear_stale_positions" in actions or "purge_ghost_positions" in actions or "disk_fallback_positions" in actions
+        return "force_refresh_positions" in actions or "force_refresh_equity" in actions or "clear_stale_positions" in actions or "purge_ghost_positions" in actions or "disk_fallback_positions" in actions or "recalculate_pnl" in actions
 
     # ── internal: LLM escalation ──
 
@@ -647,24 +795,28 @@ class DashboardAgent:
         self._last_llm_call = time.time()
 
     def _llm_correct(self, drift: dict[str, Any], snapshot: dict[str, Any], trusted: dict[str, Any]) -> dict[str, Any] | None:
-        api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+        api_key = (
+            os.getenv("NVIDIA_NIM_API_KEY")
+            or os.getenv("NVIDIA_API_KEY")
+            or os.getenv("OPENROUTER_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
+        )
         if not api_key:
             return None
 
         prompt = self._build_llm_prompt(drift, snapshot, trusted)
+        base_url = os.getenv("NVIDIA_NIM_API_BASE", "https://integrate.api.nvidia.com/v1")
         try:
             import requests
 
             resp = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
+                f"{base_url}/chat/completions",
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://owl-swarm.local",
-                    "X-Title": "OWL Dashboard Agent",
                 },
                 json={
-                    "model": "openrouter/openai/gpt-oss-120b:free",
+                    "model": "nvidia_nim/z-ai/glm-5.1",
                     "messages": [
                         {"role": "system", "content": "You are the OWL Swarm Dashboard-Agent. You detect data drift and decide exactly one corrective action. Reply with ONLY a JSON object: {\"action\":\"...\",\"reason\":\"...\",\"severity\":\"low|medium|high\"}. Actions: force_refresh_positions, force_refresh_equity, clear_stale_positions, wait_and_recheck, flag_alert, no_action."},
                         {"role": "user", "content": prompt},

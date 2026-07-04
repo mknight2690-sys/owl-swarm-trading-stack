@@ -1402,7 +1402,7 @@ def main() -> int:
 
     load_env()
     if not require_llm_key():
-        print("No OPENROUTER_API_KEY — set key in blofin-auto-trader .env or OneDrive", file=sys.stderr)
+        print("No LLM API key found — set NVIDIA_NIM_API_KEY, OPENROUTER_API_KEY, or OPENAI_API_KEY in .env or OneDrive", file=sys.stderr)
         return 1
 
     log("=" * 60)

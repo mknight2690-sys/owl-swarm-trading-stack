@@ -33,11 +33,25 @@ def require_openai_key() -> bool:
 
 
 def require_llm_key() -> bool:
-    """True when OpenRouter or OpenAI key is available (env or OneDrive key file)."""
+    """True when NVIDIA NIM, OpenRouter, or OpenAI key is available."""
+    if os.getenv("NVIDIA_NIM_API_KEY", "").strip():
+        return True
+    if os.getenv("NVIDIA_API_KEY", "").strip():
+        os.environ.setdefault("NVIDIA_NIM_API_KEY", os.getenv("NVIDIA_API_KEY"))
+        return True
     if os.getenv("OPENROUTER_API_KEY", "").strip():
         return True
     if os.getenv("OPENAI_API_KEY", "").strip():
         return True
+    try:
+        from autohedge.nvidia_nim_credentials import load_nvidia_nim_api_key
+
+        key = load_nvidia_nim_api_key()
+        if key:
+            os.environ.setdefault("NVIDIA_NIM_API_KEY", key)
+            return True
+    except Exception:
+        pass
     try:
         from autohedge.openrouter_credentials import load_openrouter_api_key
 

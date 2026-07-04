@@ -1,12 +1,12 @@
-"""LLM model selection for AutoHedge agents (OpenRouter free tier)."""
+"""LLM model selection for AutoHedge agents (NVIDIA NIM GLM-5.1)."""
 
 from __future__ import annotations
 
 import os
 
-# Pinned free model — tool-calling verified with LiteLLM + OpenRouter.
-# (Router `openrouter/free` also works but litellm flags it as non-tool; use bootstrap patch.)
-DEFAULT_MODEL = "openrouter/openai/gpt-oss-120b:free"
+# Pinned model — NVIDIA GLM-5.1 via NIM (tool-calling verified with LiteLLM).
+# Override via env: AUTOHEDGE_MODEL=nvidia_nim/z-ai/glm-5.1
+DEFAULT_MODEL = "nvidia_nim/z-ai/glm-5.1"
 
 
 def agent_model_name() -> str:

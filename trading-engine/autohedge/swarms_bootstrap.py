@@ -12,11 +12,13 @@ TOOL_CAPABLE_MODELS = frozenset(
         "openrouter/openai/gpt-oss-20b:free",
         "openrouter/openai/gpt-oss-120b:free",
         "openrouter/openrouter/free",
+        "nvidia_nim/z-ai/glm-5.1",
     }
 )
 
 _TOOL_PREFIXES = (
     "openrouter/",
+    "nvidia_nim/",
 )
 
 
