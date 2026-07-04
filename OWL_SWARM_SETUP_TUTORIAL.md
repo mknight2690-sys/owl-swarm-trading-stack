@@ -1,16 +1,16 @@
 # OWL SWARM TRADING STACK — Complete A-to-Z Setup Tutorial
 
-**Version:** 1.3 (Free VPN + Any-Balance Edition) | **Updated:** 2026-07-03  
+**Version:** 1.4 (No-KYC Blofin + Optional Palau ID Upgrade) | **Updated:** 2026-07-03  
 **What this is:** Turn your Windows laptop into a 24/7 automated crypto futures trading bot. Deposit **$5 USDT** (or less), connect to Blofin, launch once, and watch the dashboard.
 
-> **The bot works with ANY balance.** The user running this successfully trades with under $3. The $5 recommendation is just for more trade frequency — more money = more coins the bot can afford to trade. If all you have is $3, it will still scan ~500 coins, find the ones that fit your balance, and trade them. Patience is required either way.
+> **The bot works with ANY balance.** The user running this successfully trades with under $3. The $5 recommendation is just for more trade frequency. If all you have is $3, it will still scan ~500 coins, find the ones that fit your balance, and trade them. Patience is required either way.
 
 ---
 
 ## TABLE OF CONTENTS
 
 1. [Phase 0: What You Need](#phase-0-what-you-need)
-2. [Phase 1: Crypto Onramp ($5 → USDT)](#phase-1-crypto-onramp-usdt)
+2. [Phase 1: Crypto Onramp (USDT)](#phase-1-crypto-onramp-usdt)
 3. [Phase 2: VPN Setup (Free ProtonVPN)](#phase-2-vpn-setup-free-protonvpn)
 4. [Phase 3: Blofin Account + API Keys](#phase-3-blofin-account--api-keys)
 5. [Phase 4: OpenRouter Free API Key](#phase-4-openrouter-free-api-key)
@@ -21,7 +21,8 @@
 10. [Phase 9: Create Desktop Shortcuts](#phase-9-create-desktop-shortcuts)
 11. [Phase 10: First Launch](#phase-10-first-launch)
 12. [Phase 11: Daily Operation](#phase-11-daily-operation)
-13. [Troubleshooting](#troubleshooting)
+13. [Phase 12: Palau ID (Optional) — Unlock $1M/Day Withdrawals](#phase-12-palau-id-optional--unlock-1mday-withdrawals)
+14. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -41,7 +42,7 @@
 
 ### Accounts You Will Create (all free)
 1. **ProtonVPN** (free tier) — hides your IP from the exchange
-2. **Blofin** (free signup) — crypto futures exchange
+2. **Blofin** (free signup, NO KYC required) — crypto futures exchange
 3. **OpenRouter** (free tier) — AI brain for trading decisions
 4. **GitHub** (free) — to download the code
 
@@ -182,19 +183,21 @@ If whatismyipaddress.com shows United States (or any blocked country), follow th
 
 Blofin is the crypto exchange where the bot trades USDT-M perpetual futures.
 
-### Step 3.1: Create Blofin Account
+> **NO KYC REQUIRED.** Blofin does not require identity verification for trading. You can deposit, trade, and withdraw up to **$20,000 per day** without ever uploading an ID. KYC is only needed if you want higher withdrawal limits. See Phase 12 for the optional Palau ID upgrade if you need $1M/day withdrawals.
+
+### Step 3.1: Create Blofin Account (No KYC)
 
 1. Go to **https://www.blofin.com** (make sure VPN is connected and whatismyipaddress.com shows Netherlands or Japan)
 2. Click **Sign Up** in top right
 3. Use your email (can be same as ProtonVPN or different)
 4. Create a strong password
 5. Verify email
-6. Complete basic KYC (upload ID photo + selfie) — this is required for withdrawals
-7. Set up **2FA** (Google Authenticator app) — required for API keys
-
-> **Note:** KYC is required even for a $3 account. It's the exchange's rule, not the bot's.
+6. Set up **2FA** (Google Authenticator app) — required for API keys
+7. **Done. No KYC needed.** You can trade and withdraw up to $20,000/day immediately.
 
 > **CRITICAL:** During signup, Blofin may ask for your country. Say **Netherlands** or **Japan** (whichever your VPN shows). Do NOT say your real country if you're in the US, Canada, or any blocked region.
+
+> **About the $20,000/day limit:** This is per day. If you make $500/day in profits, you can withdraw all of it. If you make $20,000 in one day, you can withdraw all of it. The limit resets every 24 hours. For 99% of people starting with $5, this limit will never matter. If you scale to serious money and need more than $20K/day, see Phase 12.
 
 ### Step 3.2: Get Your Deposit Address (for the Coinbase transfer)
 
@@ -278,7 +281,7 @@ You need three things installed on your Windows computer.
 2. Download the **64-bit Git for Windows Setup**
 3. Run the installer
 4. Click **Next** through all defaults (don't change anything)
-5. When it asks about **PATH**, select **Git from the command line and also from 3rd-party software"
+5. When it asks about **PATH**, select **"Git from the command line and also from 3rd-party software"**
 6. Finish installation
 
 **Verify:** Open Command Prompt (type `cmd` in Windows search, hit Enter), type:
@@ -608,6 +611,75 @@ Once you've seen the bot trade successfully for a week:
 
 ---
 
+## PHASE 12: PALAU ID (OPTIONAL) — UNLOCK $1M/DAY WITHDRAWALS
+
+> **Is $20,000 per day enough withdrawal room for you?** Without KYC, Blofin lets you withdraw up to $20,000 USDT every 24 hours. For most people starting with $5–$50, this limit is irrelevant. You'll never hit it.
+>
+> **But if you're running serious money** — if you've scaled to $100K+ and need to pull out $50K, $100K, or more in a single day — then you need KYC. And if you live in a country that Blofin blocks, you can't KYC with your real passport.
+>
+> **That's where the Palau ID comes in.** This is how the real money operates. This is how people who take this shit seriously scale from $5 to $1,000,000 and actually move it.
+
+### What is the Palau ID?
+
+The **Republic of Palau Digital Residency ID** (also called the **Palau RNS ID**) is a government-issued digital identity card for non-residents. Palau is a sovereign nation in the Pacific. Their digital residency program lets anyone in the world apply for a legal, government-issued ID card with a Palau address — accepted by most crypto exchanges for KYC verification.
+
+**Cost:** ~$248 USD per year (one-time payment, valid for 12 months)  
+**Where to apply:** https://rns.id  
+**What you get:** A physical ID card + digital identity + Palau address  
+**Accepted by:** Blofin, Binance, Bybit, KuCoin, and most major exchanges  
+**KYC level:** Full — unlocks the highest withdrawal limits on every exchange
+
+### Why Palau ID Over a Real Passport?
+
+1. **If you're in a blocked country** (US, Canada, etc.), you can't use your real passport for KYC on Blofin. Palau ID bypasses this.
+2. **Privacy** — your real name is on your passport. Your Palau ID can use your real name too, but the address is Palau, not your home country. Exchanges see a Palau resident, not a US resident.
+3. **Universal acceptance** — one Palau ID works across almost every major exchange. KYC once, trade everywhere.
+4. **It's a real government ID** — not a fake document, not a loophole. It's a legitimate legal identity issued by a sovereign nation.
+
+### How to Get Your Palau ID
+
+**Step 1: Apply Online**
+1. Go to **https://rns.id**
+2. Click **"Apply for Digital Residency"**
+3. Fill out the application form (name, email, date of birth)
+4. Upload a photo of your current government ID (passport or driver's license — this is for Palau's verification, not Blofin's)
+5. Upload a passport-style photo of yourself (white background, face forward, no glasses)
+6. Pay the $248 fee (credit card or crypto accepted)
+7. Submit application
+
+**Step 2: Wait for Approval**
+- Approval takes **1–3 business days**
+- You'll receive an email when your digital ID is ready
+- You can download a digital version immediately
+- The physical card ships to your address in **2–4 weeks** (optional — digital is enough for KYC)
+
+**Step 3: Use It for Blofin KYC**
+1. Log in to Blofin
+2. Go to **Account → Identity Verification**
+3. Select **"Individual Verification"**
+4. Choose **"Palau"** as your country
+5. Upload your **Palau ID card** (front and back)
+6. Upload a **selfie holding the ID** (your face + ID must both be clear)
+7. Fill in your Palau address (provided by RNS.id in your account)
+8. Submit
+9. Blofin approval takes **1–24 hours**
+
+**Result:** Your daily withdrawal limit jumps from **$20,000 to $1,000,000**. You can now move serious money in and out without friction.
+
+### When to Get the Palau ID
+
+| Your Situation | Do You Need Palau ID? |
+|---|---|
+| Starting with $5–$100 | **No.** $20K/day is more than enough. |
+| Scaled to $1,000–$5,000 | **No.** $20K/day is still plenty. |
+| Making $5,000–$15,000/day in profits | **Maybe.** You're getting close to the limit. |
+| Running $100K+ and need to withdraw $50K+ in a day | **Yes.** This is when the limit matters. |
+| You live in a blocked country (US, Canada) and want full exchange access | **Yes.** This is the only way to KYC on Blofin. |
+
+> **Bottom line:** Start with no KYC. Trade with $5. Grow it. When you're pulling out $10K+ days and the $20K limit starts feeling tight, THEN get the Palau ID. It's a $248 investment that unlocks the highest tier on every exchange you use. Real money takes this seriously. Maybe you should too.
+
+---
+
 ## TROUBLESHOOTING
 
 ### "Blofin credentials not found" error
@@ -685,6 +757,7 @@ Once you've seen the bot trade successfully for a week:
 | **Check logs** | Open `C:\Users\YOU\owl-swarm-trading-stack\outputs\live-run.log` in Notepad |
 | **Check VPN country** | Chrome → `whatismyipaddress.com` |
 | **Change VPN server** | ProtonVPN → `Change Server` → wait 1:30 / 1:40 / 1:50 |
+| **Get Palau ID** | https://rns.id → $248/year → unlocks $1M/day withdrawals |
 
 ---
 
@@ -696,6 +769,7 @@ Once you've seen the bot trade successfully for a week:
 - [ ] Laptop has a login password
 - [ ] No one else has access to your credential files
 - [ ] You understand the bot can lose money — only trade what you can afford to lose
+- [ ] **Optional:** Palau ID secured for when you scale to serious money
 
 ---
 
