@@ -613,15 +613,19 @@ def _try_execute_candidate(
         _log_skip(assess_cache, inst, f"portfolio guard error: {exc}")
         return None
 
+    # Volatility is no longer a hard veto — position sizing and tight stops handle risk.
+    # This was vetoing explosive momentum setups (|chg24h| >= 14%) that the profit
+    # doctrine explicitly targets. Removed per user directive: high-momentum moves
+    # are the strategy, not a bug.
     risk_score = _risk_score_from_volatility(vol)
-    if risk_score > MAX_RISK_SCORE:
-        _log_skip(
-            assess_cache,
-            inst,
-            f"volatility risk {risk_score:.3f} > {MAX_RISK_SCORE}",
-            risk_score=risk_score,
-        )
-        return None
+    # if risk_score > MAX_RISK_SCORE:
+    #     _log_skip(
+    #         assess_cache,
+    #         inst,
+    #         f"volatility risk {risk_score:.3f} > {MAX_RISK_SCORE}",
+    #         risk_score=risk_score,
+    #     )
+    #     return None
 
     client = get_blofin_client()
     specs = client.get_instrument(inst) or {}
