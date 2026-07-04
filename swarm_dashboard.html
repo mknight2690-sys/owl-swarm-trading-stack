@@ -353,10 +353,12 @@ function renderPositions(p){
   const evEl=document.getElementById('posEvents');
   if(evEl && p.events && p.events.length){
     const ev=p.events[p.events.length-1];
-    const evColor=ev.type==='position_opened'?'var(--green)':ev.type==='position_closed'?'var(--red)':'var(--yellow)';
-    evEl.innerHTML='<span style="color:'+evColor+';font-weight:600">'+ev.type.replace('_',' ')+': '+ev.instId+'</span>';
-    evEl.style.opacity='1';
-    setTimeout(()=>{ if(evEl) evEl.style.opacity='0.5'; }, 4000);
+    if(ev && ev.type && ev.instId){
+      const evColor=ev.type==='position_opened'?'var(--green)':ev.type==='position_closed'?'var(--red)':'var(--yellow)';
+      evEl.innerHTML='<span style="color:'+evColor+';font-weight:600">'+ev.type.replace('_',' ')+': '+ev.instId+'</span>';
+      evEl.style.opacity='1';
+      setTimeout(()=>{ if(evEl) evEl.style.opacity='0.5'; }, 4000);
+    }
   }
 
   // Drift alert banner
