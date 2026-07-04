@@ -16,11 +16,22 @@ DEFAULT_NVIDIA_NIM_KEY_PATH = Path(
     )
 )
 
+_FALLBACK_KEY_PATHS = [
+    Path.home() / "OneDrive" / "Documents" / "Nvidia API Key.txt",
+    Path.home() / "OneDrive" / "Documents" / "NVIDIA API Key.txt",
+]
+
 
 def load_nvidia_nim_api_key(path: Path | None = None) -> str:
     key_path = Path(path) if path else DEFAULT_NVIDIA_NIM_KEY_PATH
+    # Try primary path, then fallbacks
+    checked = [key_path] + _FALLBACK_KEY_PATHS
+    for p in checked:
+        if p.is_file():
+            key_path = p
+            break
     if not key_path.is_file():
-        raise FileNotFoundError(f"NVIDIA NIM key file not found: {key_path}")
+        raise FileNotFoundError(f"NVIDIA NIM key file not found: checked {checked}")
     for line in reversed(key_path.read_text(encoding="utf-8").splitlines()):
         line = line.strip()
         if line.startswith("nvapi-"):
