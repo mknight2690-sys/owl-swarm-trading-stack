@@ -852,7 +852,9 @@ def _apply_fix(issue_id: str, ctx: dict[str, Any]) -> bool:
         if issue_id == "missing_tpsl":
             from autohedge.tpsl_guard import repair_missing_tpsl
 
+            logger.error("Auto-heal triggering: repair_missing_tpsl()")
             repair_missing_tpsl()
+            logger.error("Auto-heal finished: repair_missing_tpsl()")
             return True
 
         if issue_id == "universe_feed_stale":
@@ -898,7 +900,9 @@ def _apply_fix(issue_id: str, ctx: dict[str, Any]) -> bool:
             time.sleep(3)
             from autohedge.tpsl_guard import repair_missing_tpsl
 
+            logger.error("Auto-heal triggering: repair_missing_tpsl()")
             repair_missing_tpsl()
+            logger.error("Auto-heal finished: repair_missing_tpsl()")
             return True
 
         if issue_id == "prerank_held_symbol":
@@ -960,6 +964,12 @@ FIX_META: dict[str, dict[str, str]] = {
         "title": "Clear stale owl-llm.lock",
         "action": "unlink lock file when holder PID is dead",
         "component": "preflight",
+    },
+    "tpsl_invalid_price_placeholder": {
+        "title": "Blofin rejects -1 as default price for TP/SL",
+        "detail": "Blofin API rejects order-tpsl with tpOrderPrice='-1' or slOrderPrice='-1'.",
+        "component": "blofin_tools",
+        "action": "Use actual trigger price for tpOrderPrice and slOrderPrice; never use '-1' placeholder.",
     },
     "port_hijacker": {
         "title": "Protect external dashboard_server on :7878",
@@ -1208,6 +1218,12 @@ def teach_from_audit_event(
 # ── Fix-once-teach-forever catalog (reinforced every boot) ──
 
 KNOWN_FIXES: dict[str, dict[str, str]] = {
+    "tpsl_invalid_price_placeholder": {
+        "title": "Blofin rejects -1 as default price for TP/SL",
+        "detail": "Blofin API rejects order-tpsl with tpOrderPrice='-1' or slOrderPrice='-1'.",
+        "component": "blofin_tools",
+        "action": "Use actual trigger price for tpOrderPrice and slOrderPrice; never use '-1' placeholder.",
+    },
     "port_hijacker": {
         "title": "Protect external dashboard_server on :7878",
         "detail": "preflight port_hijacker was taskkilling dashboard_server.py every cycle when OWL_EXTERNAL_DASHBOARD=1.",
