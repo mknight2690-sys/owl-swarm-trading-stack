@@ -117,10 +117,10 @@ def _resolve_tpsl_prices(
     if tp_trigger_price.strip() and sl_trigger_price.strip():
         return {
             "tpTriggerPrice": tp_trigger_price.strip(),
-            "tpOrderPrice": "-1",
+            "tpOrderPrice": tp_trigger_price.strip(),
             "tpTriggerPriceType": "last",
             "slTriggerPrice": sl_trigger_price.strip(),
-            "slOrderPrice": "-1",
+            "slOrderPrice": sl_trigger_price.strip(),
             "slTriggerPriceType": "last",
             "close_side": "sell" if side.lower() == "buy" else "buy",
         }
@@ -207,6 +207,26 @@ def blofin_place_tpsl(
         tp_trigger_price=tp_trigger_price,
         sl_trigger_price=sl_trigger_price,
     )
+    # Fetch current book to clamp TPSL
+    tick = _tick_for_inst(inst)
+    try:
+        tickers = get_blofin_client().get_tickers(inst)
+        best_bid = float(tickers[0].get("bidPrice") or 0)
+        best_ask = float(tickers[0].get("askPrice") or 0)
+    except Exception:
+        best_bid = 0
+        best_ask = 0
+
+    from autohedge.tools.tpsl_utils import clamp_tpsl_to_book
+
+    levels = clamp_tpsl_to_book(
+        levels,
+        entry_side,
+        best_bid=best_bid,
+        best_ask=best_ask,
+        tick=tick,
+    )
+
     if _position_fully_protected(pos):
         return _out(
             {
@@ -717,6 +737,26 @@ def blofin_place_order(
             entry_price=entry_est,
             tp_trigger_price=tp_trigger_price,
             sl_trigger_price=sl_trigger_price,
+        )
+
+        # Fetch current book to clamp TPSL
+        tick = _tick_for_inst(inst)
+        try:
+            tickers = get_blofin_client().get_tickers(inst)
+            best_bid = float(tickers[0].get("bidPrice") or 0)
+            best_ask = float(tickers[0].get("askPrice") or 0)
+        except Exception:
+            best_bid = 0
+            best_ask = 0
+            
+        from autohedge.tools.tpsl_utils import clamp_tpsl_to_book
+        
+        tpsl = clamp_tpsl_to_book(
+            tpsl,
+            side_l,
+            best_bid=best_bid,
+            best_ask=best_ask,
+            tick=tick,
         )
 
     mm = margin_mode.strip().lower() or os.environ.get(
