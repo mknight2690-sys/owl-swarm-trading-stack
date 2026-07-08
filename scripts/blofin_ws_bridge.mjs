@@ -129,16 +129,24 @@ async function main() {
   log(`starting Chromium market bridge (${chrome})`);
   const browser = await puppeteer.launch({
     executablePath: chrome,
-    headless: true,
+    headless: false,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
+      "--disable-blink-features=AutomationControlled",
+      "--window-size=1920,1080",
+      "--start-maximized",
     ],
   });
 
   const page = await browser.newPage();
+  await page.evaluateOnNewDocument(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+    Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5] });
+    window.chrome = { runtime: {} };
+  });
   await page.setUserAgent(
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
   );
@@ -157,7 +165,7 @@ async function main() {
     waitUntil: "networkidle2",
     timeout: 120000,
   });
-  await new Promise((r) => setTimeout(r, 8000));
+  await new Promise((r) => setTimeout(r, 30000));
 
   log("fetching tickers via in-browser REST...");
   let rest = { ok: false, status: 0, data: [] };

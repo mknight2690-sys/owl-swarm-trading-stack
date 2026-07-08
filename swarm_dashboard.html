@@ -53,6 +53,8 @@ th{color:var(--dim);font-size:10px}
 .pipe-step.veto{background:rgba(248,81,73,.12);color:var(--red);border-color:var(--red)}
 .pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+/* Hide any drift alert elements that might exist */
+#driftAlert, .drift-alert, [id*="drift"] {display:none !important}
 </style>
 </head>
 <body>
@@ -349,7 +351,7 @@ function renderPositions(p){
   document.getElementById('eq').title='Equity'+(acctHint?(' ('+acctHint+src+')'):'');
   document.getElementById('av').title='Available margin'+(acctHint?(' ('+acctHint+src+')'):'');
 
-  // Events banner (position open/close, drift alerts)
+  // Events banner (position open/close only - drift alerts removed)
   const evEl=document.getElementById('posEvents');
   if(evEl && p.events && p.events.length){
     const ev=p.events[p.events.length-1];
@@ -361,19 +363,6 @@ function renderPositions(p){
     }
   }
 
-  // Drift alert banner
-  const driftEl=document.getElementById('driftAlert');
-  if(!driftEl){
-    const da=document.createElement('div');
-    da.id='driftAlert'; da.style.cssText='font-size:10px;padding:2px 8px;border-radius:4px;margin-bottom:6px;display:none;';
-    const pt=document.getElementById('pt');
-    if(pt && pt.parentElement) pt.parentElement.insertBefore(da, pt);
-  }
-  const da=document.getElementById('driftAlert');
-  if(da && p.drift_detected){
-    da.style.display='block'; da.style.background='rgba(248,81,73,.15)'; da.style.color='var(--red)';
-    da.textContent='⚠ Drift: '+p.drift_details.join(' · ').slice(0,120);
-  } else if(da) { da.style.display='none'; }
 
   const pt=document.getElementById('pt');
   const roeMap=p.roe_by_position||{};

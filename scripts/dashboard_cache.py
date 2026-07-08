@@ -20,6 +20,7 @@ LOG_FILE = OUTPUT / "owl-llm.log"
 LOCK_FILE = OUTPUT / "owl-llm.lock"
 EQUITY = OUTPUT / "equity_curve.jsonl"
 LEARNING = OUTPUT / "swarm_learning_audit.jsonl"
+TRADE_JOURNAL = Path(r"C:\Users\mknig\blofin-auto-trader\outputs\trade_journal.jsonl")
 
 PIPELINE_AGENTS = [
     "Portfolio-Manager",
@@ -226,11 +227,60 @@ def events_from_log(limit: int = 40) -> list[dict[str, Any]]:
     return events[-limit:]
 
 
+def _fmt_journal_event(ev: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert trade_journal.jsonl entry to dashboard event format."""
+    etype = str(ev.get("type") or "")
+    ts_raw = ev.get("ts")
+    try:
+        ts = int(float(ts_raw) * 1000)
+    except (TypeError, ValueError):
+        ts = int(time.time() * 1000)
+    inst = str(ev.get("instId") or "UNKNOWN")
+    if etype == "order_placed":
+        side = str(ev.get("side") or "")
+        size = str(ev.get("size") or "")
+        oid = str(ev.get("orderId") or "")
+        msg = f"📈 ORDER {side.upper()} {size} {inst} @ market (ID: {oid})"
+        return {"ts": ts, "message": msg, "level": "success"}
+    if etype == "order_blocked":
+        reason = str(ev.get("msg") or ev.get("reason") or "blocked")
+        msg = f"🚫 BLOCKED {inst} — {reason}"
+        return {"ts": ts, "message": msg, "level": "warn"}
+    if etype == "position_closed":
+        pnl = str(ev.get("realizedPnl") or "")
+        avg = str(ev.get("averagePrice") or "")
+        msg = f"💰 CLOSED {inst} @ {avg}  PnL={pnl}"
+        level = "success" if pnl.startswith("-") is False else "error"
+        return {"ts": ts, "message": msg, "level": level}
+    return None
+
+
+def events_from_journal(limit: int = 40) -> list[dict[str, Any]]:
+    """Tail trade_journal.jsonl for actual trade events."""
+    if not TRADE_JOURNAL.is_file():
+        return []
+    try:
+        lines = TRADE_JOURNAL.read_text(encoding="utf-8", errors="replace").splitlines()[-max(limit, 60):]
+    except OSError:
+        return []
+    events: list[dict[str, Any]] = []
+    for line in lines:
+        try:
+            ev = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        formatted = _fmt_journal_event(ev)
+        if formatted:
+            events.append(formatted)
+    return events[-limit:]
+
+
 def merge_events(live_events: list | None = None, limit: int = 40) -> list[dict[str, Any]]:
     log_events = events_from_log(limit)
+    journal_events = events_from_journal(limit)
     disk_events = list(live_events or [])
     merged: dict[str, dict[str, Any]] = {}
-    for ev in disk_events + log_events:
+    for ev in disk_events + log_events + journal_events:
         key = str(ev.get("message") or "")
         if key:
             merged[key] = ev

@@ -8,6 +8,8 @@ import re
 import time
 from pathlib import Path
 from typing import Any
+from collections import deque
+from datetime import datetime, timedelta
 
 from loguru import logger
 
@@ -32,6 +34,10 @@ MAX_RISK_SCORE = 0.70
 MARGIN_BUFFER = 1.25
 FEE_BUFFER_USDT = 0.004
 MIN_SENTIMENT = 0.35
+
+# Rejection tracking - avoid retrying recently vetoed symbols
+_REJECTION_TRACKER: deque = deque(maxlen=50)  # Store last 50 rejections
+_REJECTION_TIMEOUT_SEC = 3600  # 1 hour timeout before retrying symbol
 
 
 def _assumed_leverage() -> float:
@@ -82,6 +88,10 @@ def _load_technical(inst_id: str) -> dict[str, Any] | None:
 
 
 def _ranked_opportunities(top_n: int = 15) -> list[dict[str, Any]]:
+    """Get ranked opportunities with rejection tracking."""
+    # Clear old rejections periodically
+    _clear_old_rejections()
+    
     try:
         from autohedge.tools.blofin_universe_feed import get_universe_feed
         from autohedge.tools.market_analytics import rank_from_tickers
@@ -92,12 +102,43 @@ def _ranked_opportunities(top_n: int = 15) -> list[dict[str, Any]]:
             return []
         blocked_buy, blocked_sell = _blocked_sets()
         blocked = blocked_buy | blocked_sell
-        return rank_from_tickers(
+        
+        # Get initial ranked list
+        ranked = rank_from_tickers(
             snap.tickers,
             blocked=blocked,
             journal_stats=symbol_stats(),
-            top_n=top_n,
+            top_n=top_n * 2,  # Get more candidates to filter from
         )
+        
+        # Filter out recently rejected symbols
+        filtered_ranked = []
+        skipped_count = 0
+        
+        for row in ranked:
+            inst = str(row.get("instId") or "")
+            
+            # Skip if recently rejected
+            if _is_recently_rejected(inst):
+                skipped_count += 1
+                logger.debug("Skipping recently rejected: {}", inst)
+                continue
+                
+            # Skip if blocked or invalid
+            if not inst or inst in blocked:
+                continue
+                
+            filtered_ranked.append(row)
+            
+            # Stop if we have enough candidates
+            if len(filtered_ranked) >= top_n:
+                break
+        
+        if skipped_count > 0:
+            logger.info("Filtered {} recently rejected symbols from ranking", skipped_count)
+            
+        return filtered_ranked
+        
     except Exception as exc:
         logger.warning("risk_gate rank list failed: {}", exc)
         return []
@@ -138,6 +179,41 @@ def _journal_skip(inst: str) -> bool:
     if inst == "BTC-USDT" and losses >= 1 and wins == 0:
         return True
     return losses >= 2 and wins == 0
+
+
+def _track_rejection(inst: str, reason: str) -> None:
+    """Track symbol rejections to avoid immediate retry."""
+    rejection_entry = {
+        "inst": inst,
+        "reason": reason,
+        "timestamp": time.time()
+    }
+    _REJECTION_TRACKER.append(rejection_entry)
+    logger.debug("Tracked rejection: {} - {}", inst, reason)
+
+
+def _is_recently_rejected(inst: str) -> bool:
+    """Check if symbol was recently rejected (within timeout period)."""
+    current_time = time.time()
+    cutoff_time = current_time - _REJECTION_TIMEOUT_SEC
+    
+    for rejection in _REJECTION_TRACKER:
+        if (rejection["inst"] == inst and 
+            rejection["timestamp"] > cutoff_time):
+            return True
+    return False
+
+
+def _clear_old_rejections() -> None:
+    """Remove expired rejection entries to prevent memory bloat."""
+    current_time = time.time()
+    cutoff_time = current_time - _REJECTION_TIMEOUT_SEC
+    
+    global _REJECTION_TRACKER
+    _REJECTION_TRACKER = deque(
+        (r for r in _REJECTION_TRACKER if r["timestamp"] > cutoff_time),
+        maxlen=50
+    )
 
 
 def _estimate_margin_for(inst: str, entry: float | None = None) -> float:
@@ -501,6 +577,10 @@ def _record_veto(
     pipeline.risk_approved = False
     pipeline.risk_veto_reason = reason
     pipeline.terminal_skip = True
+    
+    # Track this rejection to prevent immediate retry
+    _track_rejection(inst_id, reason)
+    
     logger.info("Deterministic Risk veto for {}: {}", inst_id, reason)
     return (
         f"\nAgent: Risk-Manager (deterministic)\n\n"

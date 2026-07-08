@@ -344,12 +344,125 @@ def _account_fields(live: dict, state: dict) -> tuple[float, float, list, dict]:
     return equity, available, positions, meta
 
 
+def _load_json(path: Path, default=None):
+    if not path.is_file():
+        return default if default is not None else {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return default if default is not None else {}
+
+
+# ── PNL recalculation helpers (lightweight, no heavy imports) ──
+
+def _fresh_ticker_map() -> dict[str, float]:
+    """Read freshest mark/last prices from WS tickers or universe cache."""
+    # 1. Try ws-tickers.json (fastest, written by WS bridge)
+    ws_path = OUTPUT_DIR / "ws-tickers.json"
+    raw = _load_json(ws_path, {})
+    tickers = raw.get("tickers")
+    if isinstance(tickers, list):
+        out: dict[str, float] = {}
+        for row in tickers:
+            if isinstance(row, dict) and row.get("instId"):
+                for key in ("markPrice", "last", "lastPrice", "price"):
+                    try:
+                        v = float(row.get(key) or 0)
+                        if v > 0:
+                            out[str(row["instId"])] = v
+                            break
+                    except (TypeError, ValueError):
+                        continue
+        if out:
+            return out
+    # 2. Fall back to universe-cache.json
+    uni_path = AUTO_TRADER_ROOT / "outputs" / "universe-cache.json"
+    raw = _load_json(uni_path, {})
+    tickers = raw.get("tickers")
+    if isinstance(tickers, list):
+        out = {}
+        for row in tickers:
+            if isinstance(row, dict) and row.get("instId"):
+                for key in ("markPrice", "last", "lastPrice", "price"):
+                    try:
+                        v = float(row.get(key) or 0)
+                        if v > 0:
+                            out[str(row["instId"])] = v
+                            break
+                    except (TypeError, ValueError):
+                        continue
+        if out:
+            return out
+    return {}
+
+
+def _infer_contract_value(pos: dict) -> float:
+    """Infer contractValue from cached unrealizedPnl, markPrice, averagePrice, positions."""
+    try:
+        cv = float(pos.get("contractValue") or 0)
+        if cv > 0:
+            return cv
+    except (TypeError, ValueError):
+        pass
+    try:
+        rest_upnl = float(pos.get("unrealizedPnl") or 0)
+        qty = float(pos.get("positions") or 0)
+        avg = float(pos.get("averagePrice") or 0)
+        mark = float(pos.get("markPrice") or 0)
+    except (TypeError, ValueError):
+        return 1.0
+    diff = mark - avg
+    if abs(diff) > 1e-15 and qty != 0:
+        inferred = rest_upnl / (diff * qty)
+        if inferred > 0:
+            return inferred
+    return 1.0
+
+
+def _calc_unrealized(pos: dict, mark: float) -> float:
+    """Recalculate unrealized PNL from fresh mark price."""
+    if mark <= 0:
+        return float(pos.get("unrealizedPnl") or 0)
+    try:
+        qty = float(pos.get("positions") or 0)
+        avg = float(pos.get("averagePrice") or 0)
+    except (TypeError, ValueError):
+        return float(pos.get("unrealizedPnl") or 0)
+    if qty == 0 or avg <= 0:
+        return float(pos.get("unrealizedPnl") or 0)
+    cv = _infer_contract_value(pos)
+    return (mark - avg) * qty * cv
+
+
+def _recalc_positions_pnl(positions: list) -> list:
+    """Recalculate unrealizedPnl and markPrice for every position using fresh tickers."""
+    fresh = _fresh_ticker_map()
+    if not fresh:
+        return positions
+    updated: list = []
+    for pos in positions:
+        inst = str(pos.get("instId") or "")
+        if not inst:
+            updated.append(pos)
+            continue
+        row = dict(pos)
+        mark = fresh.get(inst)
+        if mark and mark > 0:
+            row["markPrice"] = mark
+            upnl = _calc_unrealized(row, mark)
+            if upnl != 0 or float(row.get("unrealizedPnl") or 0) != 0:
+                row["unrealizedPnl"] = upnl
+        updated.append(row)
+    return updated
+
+
 def _positions_payload() -> dict:
-    """Return live snapshot from Blofin disk cache — actual equity/available, no calculation."""
+    """Return live snapshot — prefer owl-live.json (fresh PNL from equity_stream), then disk cache with recalc."""
     now = int(time.time())
     equity = 0.0
     available = 0.0
     positions = []
+    source = "unknown"
 
     # Read actual Blofin equity from trading engine cache
     eq_cache = BLOFIN_ROOT / "outputs" / "equity-cache.json"
@@ -361,22 +474,32 @@ def _positions_payload() -> dict:
         except Exception:
             pass
 
-    # Read actual Blofin positions from trading engine cache
-    pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
-    if pos_cache.is_file():
-        try:
-            raw = json.loads(pos_cache.read_text(encoding="utf-8"))
-            positions = list(raw.get("open_rows") or [])
-        except Exception:
-            pass
-
+    # ── STEP 1: Prefer owl-live.json (equity_stream updates markPrice + unrealizedPnl every 500ms) ──
     live = _load_json(LIVE_FILE, {})
+    live_positions = live.get("positions") if isinstance(live.get("positions"), list) else []
+    if live_positions:
+        positions = live_positions
+        source = "owl_live"
+
+    # ── STEP 2: Fallback to positions-cache.json with fresh PNL recalculation ──
+    if not positions:
+        pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
+        if pos_cache.is_file():
+            try:
+                raw = json.loads(pos_cache.read_text(encoding="utf-8"))
+                rows = list(raw.get("open_rows") or [])
+                if rows:
+                    positions = _recalc_positions_pnl(rows)
+                    source = "blofin_disk_recalc"
+            except Exception:
+                pass
+
     result = {
         "equity": equity,
         "available": available,
         "positions": positions,
         "account_ts": now,
-        "account_source": "blofin_disk",
+        "account_source": source,
         "position_count": len(positions),
         "roe_by_position": live.get("roe_by_position", {}),
         "events": live.get("events", []),
@@ -384,7 +507,7 @@ def _positions_payload() -> dict:
         "drift_details": live.get("drift_details", []),
         "corrections": live.get("corrections", []),
     }
-    print(f"[_positions_payload] equity={equity:.4f} source=blofin_disk", flush=True)
+    print(f"[_positions_payload] equity={equity:.4f} source={source}", flush=True)
     return result
 
 
@@ -393,6 +516,7 @@ def _status_payload() -> dict:
     equity = 0.0
     available = 0.0
     positions = []
+    source = "unknown"
     eq_cache = BLOFIN_ROOT / "outputs" / "equity-cache.json"
     if eq_cache.is_file():
         try:
@@ -401,15 +525,25 @@ def _status_payload() -> dict:
             available = float(raw.get("available_usdt") or 0)
         except Exception:
             pass
-    pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
-    if pos_cache.is_file():
-        try:
-            raw = json.loads(pos_cache.read_text(encoding="utf-8"))
-            positions = list(raw.get("open_rows") or [])
-        except Exception:
-            pass
 
+    # Prefer owl-live.json positions (fresh PNL from equity_stream), fallback to disk cache with recalc
     live = _load_json(LIVE_FILE, {})
+    live_positions = live.get("positions") if isinstance(live.get("positions"), list) else []
+    if live_positions:
+        positions = live_positions
+        source = "owl_live"
+    else:
+        pos_cache = BLOFIN_ROOT / "outputs" / "positions-cache.json"
+        if pos_cache.is_file():
+            try:
+                raw = json.loads(pos_cache.read_text(encoding="utf-8"))
+                rows = list(raw.get("open_rows") or [])
+                if rows:
+                    positions = _recalc_positions_pnl(rows)
+                    source = "blofin_disk_recalc"
+            except Exception:
+                pass
+
     state = _load_json(STATE_FILE, {})
     running = owl_running()
     events = merge_events(live.get("events"))
@@ -434,7 +568,7 @@ def _status_payload() -> dict:
         "available": available,
         "positions": positions,
         "account_ts": int(time.time()),
-        "account_source": "blofin_disk",
+        "account_source": source,
         "events": events,
         "winRate": live.get("winRate", "--"),
         "lastError": state.get("last_error", live.get("last_error", "")),

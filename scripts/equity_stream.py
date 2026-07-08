@@ -246,8 +246,9 @@ def refresh_streaming_equity(*, write_curve: bool = True, force_live: bool = Fal
         row = dict(pos)
         if mark > 0:
             row["markPrice"] = mark
-        # Keep Blofin's actual unrealizedPnl — do NOT overwrite with WS-derived calculation.
-        # The WS-derived unrealized is only used for equity curve smoothing above.
+            # Overwrite stale cached unrealizedPnl with WS-derived mark-to-market value
+            # so downstream surfaces (dashboard, owl-live.json) show accurate PNL.
+            row["unrealizedPnl"] = upnl
         updated_positions.append(row)
 
     if base_equity > 0 and positions:

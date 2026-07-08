@@ -78,9 +78,9 @@ def default_tpsl_for_side(
     return {
         "close_side": close_side,
         "slTriggerPrice": round_to_tick(sl, tick),
-        "slOrderPrice": "-1",
+        "slOrderPrice": round_to_tick(sl, tick),
         "slTriggerPriceType": "last",
         "tpTriggerPrice": round_to_tick(tp, tick),
-        "tpOrderPrice": "-1",
+        "tpOrderPrice": round_to_tick(tp, tick),
         "tpTriggerPriceType": "last",
     }

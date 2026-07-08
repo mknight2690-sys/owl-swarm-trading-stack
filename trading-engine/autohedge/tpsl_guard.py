@@ -60,14 +60,21 @@ def position_has_full_tpsl(
             logger.warning("tpsl_guard: pending lookup failed for {}: {}", inst, exc)
             return False
 
+    logger.debug("Checking protection for {}: orders={}", inst, orders)
     for order in orders or []:
         if str(order.get("instId") or "").upper() not in ("", inst):
             continue
         om = str(order.get("marginMode") or order.get("tdMode") or "").lower()
         if om and om != want_margin:
+            logger.debug("Order {} margin mode {} does not match {}", order.get("orderId"), om, want_margin)
             continue
-        if _order_has_tp(order) and _order_has_sl(order):
+        has_tp = _order_has_tp(order)
+        has_sl = _order_has_sl(order)
+        if has_tp and has_sl:
+            logger.debug("Order {} provides full protection for {}", order.get("orderId"), inst)
             return True
+        else:
+            logger.debug("Order {} does not provide full protection: has_tp={}, has_sl={}", order.get("orderId"), has_tp, has_sl)
     return False
 
 
@@ -195,14 +202,19 @@ def repair_missing_tpsl(*, inst_id: str = "") -> dict[str, Any]:
     if inst_id.strip():
         needle = inst_id.strip().upper()
         targets = [t for t in targets if t.upper() == needle] or [needle]
+    
+    logger.debug("Attempting TP/SL repair for targets: {}", targets)
 
     results: list[dict[str, Any]] = []
     for inst in targets:
         try:
+            logger.debug("Placing TP/SL for {}", inst)
             raw = blofin_place_tpsl(inst_id=inst, tp_trigger_price="", sl_trigger_price="")
+            logger.debug("Raw blofin_place_tpsl response for {}: {}", inst, raw)
             row = json.loads(raw)
             results.append({"instId": inst, "status": "placed", "result": row})
         except Exception as exc:
+            logger.error("Failed to place TP/SL for {}: {}", inst, exc)
             results.append({"instId": inst, "status": "error", "error": str(exc)[:300]})
 
     after = audit_open_positions_tpsl(force_refresh=True)
@@ -212,6 +224,7 @@ def repair_missing_tpsl(*, inst_id: str = "") -> dict[str, Any]:
         "repairs": results,
         "fixed": after.get("ok", False),
     }
+
 
     if after.get("ok"):
         try:
